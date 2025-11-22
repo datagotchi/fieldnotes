@@ -1,3 +1,7 @@
+import React from "react";
+
+import { styles } from "../constants";
+
 const Header = () => {
   return (
     <header style={styles.header}>

@@ -1,25 +1,9 @@
-import { useEffect, useState } from "react";
+import React, { useState } from "react";
+
+import useLocalStorage from "./hooks/useLocalStorage";
 import Header from "./components/header";
+import Note from "./components/note";
 import { styles } from "./constants";
-
-const useLocalStorage = (key, initial = []) => {
-  const [state, setState] = useState(() => {
-    try {
-      const raw = localStorage.getItem(key);
-      return raw ? JSON.parse(raw) : initial;
-    } catch {
-      return initial;
-    }
-  });
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(key, JSON.stringify(state));
-    } catch {}
-  }, [key, state]);
-
-  return [state, setState];
-};
 
 const App = () => {
   const [notes, setNotes] = useLocalStorage("fieldnotes.notes", []);

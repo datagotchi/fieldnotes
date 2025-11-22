@@ -1,0 +1,51 @@
+export const styles = {
+  app: {
+    fontFamily:
+      "system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial",
+    maxWidth: 720,
+    margin: "36px auto",
+    padding: 20,
+    color: "#111",
+  },
+  header: { marginBottom: 16 },
+  subtitle: { marginTop: 6, color: "#666" },
+  main: {
+    background: "#fff",
+    borderRadius: 8,
+    padding: 16,
+    boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
+  },
+  form: { display: "flex", gap: 8, marginBottom: 12 },
+  input: {
+    flex: 1,
+    padding: "10px 12px",
+    borderRadius: 6,
+    border: "1px solid #ddd",
+  },
+  button: {
+    padding: "10px 14px",
+    borderRadius: 6,
+    border: "none",
+    background: "#0366d6",
+    color: "#fff",
+    cursor: "pointer",
+  },
+  list: { listStyle: "none", padding: 0, margin: 0 },
+  empty: { color: "#666", padding: 12 },
+  item: { padding: 12, borderBottom: "1px solid #f0f0f0" },
+  itemText: { marginBottom: 8 },
+  itemMeta: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: 8,
+    color: "#666",
+  },
+  delete: {
+    background: "transparent",
+    border: "none",
+    color: "#d0342c",
+    cursor: "pointer",
+  },
+  footer: { marginTop: 12, textAlign: "center", color: "#888" },
+};

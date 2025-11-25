@@ -30383,7 +30383,7 @@ var App = function App() {
     _useState2 = _slicedToArray(_useState, 2),
     text = _useState2[0],
     setText = _useState2[1];
-  function addNote(e) {
+  var addNote = function addNote(e) {
     e.preventDefault();
     var trimmed = text.trim();
     if (!trimmed) return;
@@ -30394,12 +30394,12 @@ var App = function App() {
     };
     setNotes([note].concat(_toConsumableArray(notes)));
     setText("");
-  }
-  function removeNote(id) {
+  };
+  var removeNote = function removeNote(id) {
     setNotes(notes.filter(function (n) {
       return n.id !== id;
     }));
-  }
+  };
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     style: _constants__WEBPACK_IMPORTED_MODULE_4__.styles.app
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_header__WEBPACK_IMPORTED_MODULE_2__["default"], null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("main", {
@@ -30424,11 +30424,13 @@ var App = function App() {
     style: _constants__WEBPACK_IMPORTED_MODULE_4__.styles.empty
   }, "No notes yet \u2014 add one above."), notes.map(function (note) {
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_note__WEBPACK_IMPORTED_MODULE_3__["default"], {
-      data: note
+      data: note,
+      removeNote: removeNote,
+      key: "note: ".concat(note.id)
     });
   }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("footer", {
     style: _constants__WEBPACK_IMPORTED_MODULE_4__.styles.footer
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("small", null, "Built with React")));
+  }));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (App);
 
@@ -30458,7 +30460,7 @@ var Header = function Header() {
     }
   }, "Field Notes"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", {
     style: _constants__WEBPACK_IMPORTED_MODULE_1__.styles.subtitle
-  }, "Quick notes saved to localStorage"));
+  }));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Header);
 
@@ -30480,7 +30482,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var Note = function Note(_ref) {
-  var data = _ref.data;
+  var data = _ref.data,
+    removeNote = _ref.removeNote;
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", {
     key: data.id,
     style: _constants__WEBPACK_IMPORTED_MODULE_1__.styles.item

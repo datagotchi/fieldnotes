@@ -2,7 +2,7 @@ import React from "react";
 
 import { styles } from "../constants";
 
-const Note = ({ data }) => {
+const Note = ({ data, removeNote }) => {
   return (
     <li key={data.id} style={styles.item}>
       <div style={styles.itemText}>{data.text}</div>

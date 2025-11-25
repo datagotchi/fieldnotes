@@ -4,34 +4,28 @@ import useLocalStorage from "./hooks/useLocalStorage";
 import Header from "./components/header";
 import Note from "./components/note";
 import { styles } from "./constants";
+import useAPI from "./hooks/useAPI";
 
 const App = () => {
-  const [notes, setNotes] = useLocalStorage("fieldnotes.notes", []);
+  const { notes, addNote, deleteNote } = useAPI();
   const [text, setText] = useState("");
-
-  function addNote(e) {
-    e.preventDefault();
-    const trimmed = text.trim();
-    if (!trimmed) return;
-    const note = {
-      id: Date.now(),
-      text: trimmed,
-      createdAt: new Date().toISOString(),
-    };
-    setNotes([note, ...notes]);
-    setText("");
-  }
-
-  function removeNote(id) {
-    setNotes(notes.filter((n) => n.id !== id));
-  }
 
   return (
     <div style={styles.app}>
       <Header />
 
       <main style={styles.main}>
-        <form onSubmit={addNote} style={styles.form}>
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            const trimmed = text.trim();
+            if (trimmed) {
+              await addNote(trimmed);
+            }
+            setText("");
+          }}
+          style={styles.form}
+        >
           <input
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -49,14 +43,16 @@ const App = () => {
             <li style={styles.empty}>No notes yet — add one above.</li>
           )}
           {notes.map((note) => (
-            <Note data={note} />
+            <Note
+              data={note}
+              removeNote={deleteNote}
+              key={`note: ${note.id}`}
+            />
           ))}
         </ul>
       </main>
 
-      <footer style={styles.footer}>
-        <small>Built with React</small>
-      </footer>
+      <footer style={styles.footer}></footer>
     </div>
   );
 };

@@ -4,12 +4,43 @@ import cookieParser from "cookie-parser";
 import logger from "morgan";
 import { createServer } from "http";
 import path from "path";
+import { Pool } from "pg";
 
 // import indexRouter from "./routes/index.js";
 // import usersRouter from "./routes/users";
+import notesRouter from "./routes/notes.js";
 // var debug = require("debug")("fieldnotes:server");
 
+const pool = new Pool({
+  user: "postgres",
+  password: "p4ssw0rd",
+  database: "fieldnotes",
+  host: "localhost",
+  port: 5432,
+  // max: 50, // 10 is default
+  // idleTimeoutMillis: 10000, // 10000 is default
+  // connectionTimeoutMillis: 2000, // 0 (no timeout!) is default
+});
+pool.on("error", (err) => {
+  console.error("pg pool error: ", err);
+  process.exit();
+});
+
 var app = express();
+
+app.use(async (req, res, next) => {
+  try {
+    req.pool = pool;
+    next();
+  } catch (err) {
+    console.error(err);
+    console.error("TotalCount", pool.totalCount);
+    console.error("IdleCount", pool.idleCount);
+    console.error("WaitingCount", pool.waitingCount);
+    console.error("So, restarting server...");
+    process.exit();
+  }
+});
 
 app.use(logger("dev"));
 app.use(json());
@@ -21,6 +52,7 @@ app.use(express.static(staticPath));
 
 // app.use("/", indexRouter);
 // app.use("/users", usersRouter);
+app.use("/notes", notesRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

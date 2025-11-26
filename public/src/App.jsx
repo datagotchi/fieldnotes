@@ -39,16 +39,18 @@ const App = () => {
         </form>
 
         <ul style={styles.list}>
-          {notes.length === 0 && (
-            <li style={styles.empty}>No notes yet — add one above.</li>
-          )}
-          {notes.map((note) => (
-            <Note
-              data={note}
-              removeNote={deleteNote}
-              key={`note: ${note.id}`}
-            />
-          ))}
+          {!notes ||
+            (notes.length === 0 && (
+              <li style={styles.empty}>No notes yet — add one above.</li>
+            ))}
+          {notes &&
+            notes.map((note) => (
+              <Note
+                data={note}
+                removeNote={deleteNote}
+                key={`note: ${note.id}`}
+              />
+            ))}
         </ul>
       </main>
 

@@ -9,7 +9,7 @@ router.get("/", async (req, res, next) => {
       values: [1],
     })
     .then((response) => response.rows);
-  return res.send(notes);
+  return res.json(notes);
 });
 
 router.post("/", async (req, res, next) => {
@@ -20,7 +20,7 @@ router.post("/", async (req, res, next) => {
       values: [note.text, new Date().toISOString(), 1],
     })
     .then((response) => response.rows[0]);
-  return res.send(newNote);
+  return res.json(newNote);
 });
 
 router.delete("/:note_id", async (req, res, next) => {
@@ -28,7 +28,46 @@ router.delete("/:note_id", async (req, res, next) => {
     text: "delete from notes where id = $1::integer",
     values: [req.params.note_id],
   });
-  return res.sendStatus(200);
+  return res.sendStatus(204);
+});
+
+router.patch("/:note_id", async (req, res, next) => {
+  if (Object.keys(req.body).length > 0) {
+    if (req.params.note_id) {
+      const changes = req.body;
+      const keys = Object.keys(changes || {});
+      if (keys.length === 0) {
+        req.pool.release();
+        return res.sendStatus(400);
+      }
+
+      // basic column name validation to avoid injection via keys
+      const validKeys = keys.filter((k) => /^[a-z][a-z0-9_]*$/i.test(k));
+      if (validKeys.length === 0) {
+        req.pool.release();
+        return res.sendStatus(400);
+      }
+
+      const set = validKeys.map((k, i) => `"${k}" = $${i + 1}`).join(", ");
+      const values = validKeys.map((k) => changes[k]);
+      values.push(Number(req.params.note_id));
+
+      const note = await req.pool
+        .query({
+          text: `update notes set ${set} where id = $${values.length} returning *`,
+          values,
+        })
+        .then((result) => result.rows[0]);
+      if (note) {
+        return res.json(note);
+      }
+    } else {
+      req.pool.release();
+      return res.sendStatus(400);
+    }
+  }
+  req.pool.release();
+  return res.sendStatus(404);
 });
 
 export default router;

@@ -587,6 +587,11 @@ raw-body@2.3.3:
     iconv-lite "0.4.23"
     unpipe "1.0.0"
 
+react-easy-edit@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/react-easy-edit/-/react-easy-edit-2.0.0.tgz#7d223f71dd5aaea04e48b73aeedf74eaf358455e"
+  integrity sha512-Zsssj2RA3s3fNfFw5AzawKEQa9eUa774pXRo347vOU3G9Qqb6939lsIAPlltARakxoB1ct9+naj4M6jNs1iNFQ==
+
 repeat-string@^1.5.2:
   version "1.6.1"
   resolved "https://registry.yarnpkg.com/repeat-string/-/repeat-string-1.6.1.tgz#8dcae470e1c88abc2d600fff4a776286da75e637"

@@ -1,21 +1,7 @@
 import { useEffect, useState } from "react";
 
 const useAPI = () => {
-  const [notes, setNotes] = useState();
-
-  useEffect(() => {
-    if (!notes) {
-      fetch("/notes")
-        .then((response) => response.json())
-        .then((data) => {
-          if (Array.isArray(data)) {
-            setNotes(data);
-          } else {
-            throw data;
-          }
-        });
-    }
-  }, [notes]);
+  const getNotes = () => fetch("/notes").then((response) => response.json());
 
   const addNote = (note) =>
     fetch("/notes", {
@@ -27,21 +13,25 @@ const useAPI = () => {
       body: JSON.stringify({
         text: note.trim(),
       }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setNotes([data, ...notes]);
-      });
+    }).then((response) => response.json());
 
-  const deleteNote = (note) =>
-    fetch(`/notes/${note.id}`, { method: "DELETE" }).then(() => {
-      setNotes(notes.filter((n) => n.id !== note.id));
-    });
+  const deleteNote = (note) => fetch(`/notes/${note.id}`, { method: "DELETE" });
+
+  const updateNote = (note) =>
+    fetch(`/notes/${note.id}`, {
+      method: "PATCH",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(note),
+    }).then((response) => response.json());
 
   return {
-    notes,
+    getNotes,
     addNote,
     deleteNote,
+    updateNote,
   };
 };
 

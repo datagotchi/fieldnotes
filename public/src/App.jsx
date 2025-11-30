@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import useLocalStorage from "./hooks/useLocalStorage";
 import Header from "./components/header";
@@ -7,8 +7,13 @@ import { styles } from "./constants";
 import useAPI from "./hooks/useAPI";
 
 const App = () => {
-  const { notes, addNote, deleteNote } = useAPI();
+  const { getNotes, addNote, deleteNote } = useAPI();
+  const [notes, setNotes] = useState([]);
   const [text, setText] = useState("");
+
+  useEffect(() => {
+    getNotes().then((notes) => setNotes(notes));
+  }, []);
 
   return (
     <div style={styles.app}>
@@ -20,7 +25,8 @@ const App = () => {
             e.preventDefault();
             const trimmed = text.trim();
             if (trimmed) {
-              await addNote(trimmed);
+              const newNote = await addNote(trimmed);
+              setNotes([newNote, ...notes]);
             }
             setText("");
           }}
@@ -44,13 +50,18 @@ const App = () => {
               <li style={styles.empty}>No notes yet — add one above.</li>
             ))}
           {notes &&
-            notes.map((note) => (
-              <Note
-                data={note}
-                removeNote={deleteNote}
-                key={`note: ${note.id}`}
-              />
-            ))}
+            notes
+              .sort((a, b) => new Date(b.datetime) - new Date(a.datetime))
+              .map((note) => (
+                <Note
+                  data={note}
+                  removeNote={async () => {
+                    await deleteNote(note);
+                    setNotes(notes.filter((n) => n.id !== note.id));
+                  }}
+                  key={`note: ${note.id}`}
+                />
+              ))}
         </ul>
       </main>
 

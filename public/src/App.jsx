@@ -32,12 +32,14 @@ const App = () => {
           }}
           style={styles.form}
         >
-          <input
+          <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Write a quick note..."
             style={styles.input}
             aria-label="New note"
+            rows="10"
+            cols="100"
           />
           <button type="submit" style={styles.button}>
             Add

@@ -15,7 +15,7 @@ export const styles = {
     padding: 16,
     boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
   },
-  form: { display: "flex", gap: 8, marginBottom: 12 },
+  form: { display: "flex", flexDirection: "column", marginBottom: 12 },
   input: {
     flex: 1,
     padding: "10px 12px",

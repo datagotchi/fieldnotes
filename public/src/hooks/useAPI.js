@@ -27,11 +27,36 @@ const useAPI = () => {
       body: JSON.stringify(note),
     }).then((response) => response.json());
 
+  const getFields = () => fetch("/fields").then((response) => response.json());
+
+  const addField = (fieldName) =>
+    fetch("/fields", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: fieldName }),
+    }).then((response) => response.json());
+
+  const useField = (fieldId, noteId) =>
+    fetch("/field_values", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ field_id: fieldId, node_id: noteId }),
+    }).then((response) => response.json());
+
   return {
     getNotes,
     addNote,
     deleteNote,
     updateNote,
+    getFields,
+    addField,
+    useField,
   };
 };
 

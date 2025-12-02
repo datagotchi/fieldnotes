@@ -1,11 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import EasyEdit from "react-easy-edit";
 
 import { styles } from "../constants";
 import useAPI from "../hooks/useAPI";
+import FieldControls from "./FieldControls";
+import NoteEditor from "./NoteEditor";
 
 const Note = ({ data, removeNote }) => {
   const api = useAPI();
+
+  const [fieldDefinitions, setFieldDefinitions] = useState([
+    { id: "1", label: "What Happened" },
+    { id: "2", label: "Key Interactions/Behavioral Insights" },
+  ]);
 
   return (
     <li key={data.id} style={styles.item}>
@@ -21,7 +28,9 @@ const Note = ({ data, removeNote }) => {
             });
             data.text = changes.text;
           }}
-          renderValue={(value) => <span>{value}</span>}
+          editComponent={
+            <NoteEditor note={data} fieldDefinitions={fieldDefinitions} />
+          }
         />
       </div>
       <div style={styles.itemMeta}>

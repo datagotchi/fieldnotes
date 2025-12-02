@@ -7,12 +7,14 @@ import { styles } from "./constants";
 import useAPI from "./hooks/useAPI";
 
 const App = () => {
-  const { getNotes, addNote, deleteNote } = useAPI();
-  const [notes, setNotes] = useState([]);
+  const { getNotes, addNote, deleteNote, getFields } = useAPI();
   const [text, setText] = useState("");
+  const [notes, setNotes] = useState([]);
+  const [fields, setFields] = useState([]);
 
   useEffect(() => {
     getNotes().then((notes) => setNotes(notes));
+    getFields().then((fields) => setFields(fields));
   }, []);
 
   return (
@@ -61,7 +63,8 @@ const App = () => {
                     await deleteNote(note);
                     setNotes(notes.filter((n) => n.id !== note.id));
                   }}
-                  key={`note: ${note.id}`}
+                  fields={fields}
+                  // key={`note: ${note.id}`}
                 />
               ))}
         </ul>

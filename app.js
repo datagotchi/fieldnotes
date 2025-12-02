@@ -9,11 +9,12 @@ import { Pool } from "pg";
 // import indexRouter from "./routes/index.js";
 // import usersRouter from "./routes/users";
 import notesRouter from "./routes/notes.js";
+import fieldsRouter from "./routes/fields.js";
 // var debug = require("debug")("fieldnotes:server");
 
 const pool = new Pool({
   user: "postgres",
-  password: "p4ssw0rd",
+  password: "p4ssw0rd", // TODO: the ident is configured as `trust`, so this is redundant
   database: "fieldnotes",
   host: "localhost",
   port: 5432,
@@ -53,6 +54,7 @@ app.use(express.static(staticPath));
 // app.use("/", indexRouter);
 // app.use("/users", usersRouter);
 app.use("/notes", notesRouter);
+app.use("/fields", fieldsRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

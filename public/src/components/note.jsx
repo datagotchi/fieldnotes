@@ -1,18 +1,38 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import EasyEdit from "react-easy-edit";
 
 import { styles } from "../constants";
 import useAPI from "../hooks/useAPI";
 import FieldControls from "./FieldControls";
 import NoteEditor from "./NoteEditor";
+import Field from "./Field";
 
 const Note = ({ data, removeNote }) => {
   const api = useAPI();
 
-  const [fieldDefinitions, setFieldDefinitions] = useState([
-    { id: "1", label: "What Happened" },
-    { id: "2", label: "Key Interactions/Behavioral Insights" },
-  ]);
+  const [fieldDefinitions, setFieldDefinitions] = useState();
+
+  useEffect(() => {
+    if (!fieldDefinitions) {
+      api.getFields().then((data) => {
+        setFieldDefinitions(data);
+      });
+    }
+  }, [fieldDefinitions]);
+
+  const getFieldLabel = useCallback(
+    (fieldId) => {
+      if (fieldDefinitions) {
+        const fieldDefinition = fieldDefinitions.find(
+          (fd) => fd.id === fieldId
+        );
+        if (fieldDefinition) {
+          return fieldDefinition.name;
+        }
+      }
+    },
+    [fieldDefinitions]
+  );
 
   return (
     <li key={data.id} style={styles.item}>
@@ -23,7 +43,7 @@ const Note = ({ data, removeNote }) => {
           value={data.text}
           onSave={async (newValue) => {
             const changes = await api.updateNote({
-              ...data,
+              id: data.id,
               text: newValue,
             });
             data.text = changes.text;
@@ -33,6 +53,13 @@ const Note = ({ data, removeNote }) => {
           }
         />
       </div>
+
+      {fieldDefinitions &&
+        data.fields &&
+        data.fields.map((f) => (
+          <Field label={getFieldLabel(f.field_id)} value={f.value} />
+        ))}
+
       <div style={styles.itemMeta}>
         <small>{new Date(data.datetime).toLocaleString()}</small>
         <button

@@ -214,7 +214,6 @@ COPY public.fields (id, name) FROM stdin;
 COPY public.notes (id, user_id, text, emoji, datetime) FROM stdin;
 14	1	test	\N	2025-12-01 00:53:04.085-05
 15	1	test\n2	\N	2025-12-01 00:53:09.339-05
-16	1	12/1/2025 - Sparta High School, Language Arts\n\nContext: Substitute for Language Arts Teacher (Sparta HS)\n\nWhen/Where\n\nMonday, 12/1/2025, Sparta High School (Language Arts classes)\n\nWhat Happened (Events)\n\n1st Hour (AP Lang): Quiet, productive atmosphere established after brief instruction on noise levels. 2nd Hour (English 12): Louder but uneventful. 3rd Hour (Intervention): 2h 20m of low productivity; students felt unmotivated by sub. 4th Hour (Focus): Teacher requested move; I took them to another teacher. Office Interaction: Office staff/Focus teacher seemed angry when I asked if I could assist elsewhere after delegating the student.\n\nKey Interactions/Behavioral Insights\n\nStudent 1 (Troubled Kid): Confided they aren't trying because they are passing (critical insight into threshold behavior). Later joked about needing to appear productive to avoid being yelled at (direct observation of superficial compliance).\n\nWhat Did I Do (Action Taken)\n\nSet clear expectations (quiet), wrote assignments, facilitated student transfers, proactively sought guidance from office/other teacher when the Focus class was handled.\n\nWhy Did I Do It (Rationale)\n\nTo create a calm, productive learning environment (1st hour). To ensure all student needs were met and to check-in/be available (Focus/Office).\n\nEffects/Key Risks (Self-Discovery)\n\nPositive: Established control (1st hour). Negative: Low productivity in non-traditional classes. Major Risk/Anxiety: The interaction with the office/Focus teacher triggered anxiety about reputation/auditability ("I hope they're not angry at me/have heard anything bad about me from Kent City").	\N	2025-12-01 23:55:10.466-05
 \.
 
 
@@ -231,14 +230,14 @@ COPY public.users (id, email, password) FROM stdin;
 -- Name: field_values_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.field_values_id_seq', 1, false);
+SELECT pg_catalog.setval('public.field_values_id_seq', 6, true);
 
 
 --
 -- Name: fields_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.fields_id_seq', 1, false);
+SELECT pg_catalog.setval('public.fields_id_seq', 21, true);
 
 
 --
@@ -280,11 +279,43 @@ ALTER TABLE ONLY public.notes
 
 
 --
+-- Name: field_values u_fid_nid; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.field_values
+    ADD CONSTRAINT u_fid_nid UNIQUE (field_id, note_id);
+
+
+--
+-- Name: fields u_name; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.fields
+    ADD CONSTRAINT u_name UNIQUE (name);
+
+
+--
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: field_values fk_fid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.field_values
+    ADD CONSTRAINT fk_fid FOREIGN KEY (field_id) REFERENCES public.fields(id) ON DELETE CASCADE;
+
+
+--
+-- Name: field_values fk_nid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.field_values
+    ADD CONSTRAINT fk_nid FOREIGN KEY (note_id) REFERENCES public.notes(id) ON DELETE CASCADE;
 
 
 --

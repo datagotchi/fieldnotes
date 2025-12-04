@@ -13,8 +13,8 @@ const App = () => {
   const [fields, setFields] = useState([]);
 
   useEffect(() => {
-    getNotes().then((notes) => setNotes(notes));
     getFields().then((fields) => setFields(fields));
+    getNotes().then((notes) => setNotes(notes));
   }, []);
 
   return (
@@ -53,6 +53,17 @@ const App = () => {
             (notes.length === 0 && (
               <li style={styles.empty}>No notes yet — add one above.</li>
             ))}
+          {notes && (
+            <p
+              style={{
+                fontSize: "smaller",
+                fontColor: "#CCC",
+                fontStyle: "italic",
+              }}
+            >
+              Click or tap a note text to edit it
+            </p>
+          )}
           {notes &&
             notes
               .sort((a, b) => new Date(b.datetime) - new Date(a.datetime))
@@ -64,7 +75,7 @@ const App = () => {
                     setNotes(notes.filter((n) => n.id !== note.id));
                   }}
                   fields={fields}
-                  // key={`note: ${note.id}`}
+                  key={`note: ${note.id}`}
                 />
               ))}
         </ul>

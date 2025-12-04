@@ -39,14 +39,18 @@ const useAPI = () => {
       body: JSON.stringify({ name: fieldName }),
     }).then((response) => response.json());
 
-  const useField = (fieldId, noteId) =>
-    fetch("/field_values", {
-      method: "POST",
+  const useField = (fieldId, noteId, value) =>
+    fetch(`/notes/${noteId}`, {
+      method: "PATCH",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ field_id: fieldId, node_id: noteId }),
+      body: JSON.stringify({
+        field_id: fieldId,
+        note_id: noteId,
+        field_value: value,
+      }),
     }).then((response) => response.json());
 
   return {

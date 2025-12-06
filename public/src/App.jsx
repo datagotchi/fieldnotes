@@ -7,11 +7,13 @@ import { styles } from "./constants";
 import useAPI from "./hooks/useAPI";
 
 const App = () => {
-  const { getNotes, addNote, deleteNote } = useAPI();
-  const [notes, setNotes] = useState([]);
+  const { getNotes, addNote, deleteNote, getFields } = useAPI();
   const [text, setText] = useState("");
+  const [notes, setNotes] = useState([]);
+  const [fields, setFields] = useState([]);
 
   useEffect(() => {
+    getFields().then((fields) => setFields(fields));
     getNotes().then((notes) => setNotes(notes));
   }, []);
 
@@ -51,6 +53,17 @@ const App = () => {
             (notes.length === 0 && (
               <li style={styles.empty}>No notes yet — add one above.</li>
             ))}
+          {notes && (
+            <p
+              style={{
+                fontSize: "smaller",
+                fontColor: "#CCC",
+                fontStyle: "italic",
+              }}
+            >
+              Click or tap a note text to edit it
+            </p>
+          )}
           {notes &&
             notes
               .sort((a, b) => new Date(b.datetime) - new Date(a.datetime))
@@ -61,6 +74,7 @@ const App = () => {
                     await deleteNote(note);
                     setNotes(notes.filter((n) => n.id !== note.id));
                   }}
+                  fields={fields}
                   key={`note: ${note.id}`}
                 />
               ))}

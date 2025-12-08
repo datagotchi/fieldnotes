@@ -4,7 +4,7 @@ import FieldControls from "./FieldControls";
 import useAPI from "../hooks/useAPI";
 import Field from "./Field";
 
-const NoteEditor = ({ note, setParentValue, onBlur, fieldDefinitions }) => {
+const NoteEditor = ({ note, fieldDefinitions, afterAddingField }) => {
   const [internalValue, setInternalValue] = useState(note);
   const [selectedText, setSelectedText] = useState({});
 
@@ -14,30 +14,36 @@ const NoteEditor = ({ note, setParentValue, onBlur, fieldDefinitions }) => {
     setInternalValue(e.target.value);
   };
 
-  const handleBlur = () => {
-    setParentValue(internalValue);
-    setSelectedText({});
-    if (onBlur) {
-      onBlur();
+  // Track if FieldControls is focused to avoid triggering blur when interacting with it
+  const [fieldControlsFocused, setFieldControlsFocused] = useState(false);
+
+  const handleBlur = (e) => {
+    if (!fieldControlsFocused) {
+      setSelectedText({});
     }
   };
 
   const doUseFieldAndUpdate = useCallback(
     async (field, value) => {
-      const updatedNote = await api.useField(newField.id, note.id, value);
-      setInternalValue({
-        ...internalValue,
-        fields: [...internalValue.fields, ...updatedNote.fields],
+      const updatedNote = await api.useField(field.id, note.id, value);
+      // setInternalValue({
+      //   ...internalValue,
+      //   field_values: [
+      //     ...internalValue.field_values,
+      //     ...updatedNote.field_values,
+      //   ],
+      // });
+      const newFieldValue = updatedNote.field_values[0];
+      return afterAddingField({
+        id: newFieldValue.field_id,
+        name: field.name,
+        value,
       });
-      // FIXME: debug to find out if I need to call this or, like, parent.blur
-      if (onBlur) {
-        onBlur();
-      }
     },
-    [note.id, internalValue, onBlur]
+    [note.id, internalValue]
   );
 
-  const handleSelectNewField = useCallback(
+  const handleAddNewFieldToNote = useCallback(
     async (field, value) => {
       const newField = await api.addField(field.name);
       return doUseFieldAndUpdate(newField, value);
@@ -45,7 +51,7 @@ const NoteEditor = ({ note, setParentValue, onBlur, fieldDefinitions }) => {
     [note.id]
   );
 
-  const handleSelectExistingField = useCallback(
+  const handleAddExistingFieldToNote = useCallback(
     async (field, value) => {
       const updatedNote = await api.useField(field.id, note.id, value);
       return doUseFieldAndUpdate(field, value);
@@ -59,27 +65,38 @@ const NoteEditor = ({ note, setParentValue, onBlur, fieldDefinitions }) => {
       value: selection.toString(),
       start: selection.anchorOffset,
     });
-    // FIXME: verify it clears selectected text on blur/etc.
-  }, []);
+  });
 
   return (
-    <div style={{ marginBottom: 16 }}>
-      <FieldControls
-        data={internalValue}
-        // setData={setInternalValue}
-        fieldDefinitions={fieldDefinitions}
-        handleAddNewFieldToNote={handleSelectNewField}
-        handleSelectExistingField={handleSelectExistingField}
-      />
-      <p
-        style={{
-          fontSize: "smaller",
-          fontColor: "#CCC",
-          fontStyle: "italic",
-        }}
-      >
-        Select text to move it to a field
-      </p>
+    <>
+      {selectedText.value && (
+        <div
+          onMouseDown={() => setFieldControlsFocused(true)}
+          onMouseUp={() => setFieldControlsFocused(false)}
+          onBlur={() => setFieldControlsFocused(false)}
+          tabIndex={-1}
+        >
+          <FieldControls
+            note={note}
+            selectedText={selectedText}
+            setSelectedText={setSelectedText}
+            fieldDefinitions={fieldDefinitions}
+            handleAddNewFieldToNote={handleAddNewFieldToNote}
+            handleAddExistingFieldToNote={handleAddExistingFieldToNote}
+          />
+        </div>
+      )}
+      {!selectedText.value && (
+        <p
+          style={{
+            fontSize: "smaller",
+            fontColor: "#CCC",
+            fontStyle: "italic",
+          }}
+        >
+          Select text to move it to a field
+        </p>
+      )}
       <textarea
         rows="10"
         cols="100"
@@ -94,7 +111,7 @@ const NoteEditor = ({ note, setParentValue, onBlur, fieldDefinitions }) => {
           {selectedText.value}
         </p>
       )}
-    </div>
+    </>
   );
 };
 

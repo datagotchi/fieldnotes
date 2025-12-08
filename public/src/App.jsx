@@ -70,6 +70,12 @@ const App = () => {
               .map((note) => (
                 <Note
                   data={note}
+                  setData={(updatedNote) => {
+                    const updatedNotes = notes.map((n) =>
+                      n.id === updatedNote.id ? updatedNote : n
+                    );
+                    setNotes(updatedNotes);
+                  }}
                   removeNote={async () => {
                     await deleteNote(note);
                     setNotes(notes.filter((n) => n.id !== note.id));

@@ -7,7 +7,7 @@ import FieldControls from "./FieldControls";
 import NoteEditor from "./NoteEditor";
 import Field from "./Field";
 
-const Note = ({ data, removeNote }) => {
+const Note = ({ data, setData, removeNote }) => {
   const api = useAPI();
 
   const [fieldDefinitions, setFieldDefinitions] = useState();
@@ -49,17 +49,27 @@ const Note = ({ data, removeNote }) => {
             data.text = changes.text;
           }}
           editComponent={
-            <NoteEditor note={data} fieldDefinitions={fieldDefinitions} />
+            <NoteEditor
+              note={data}
+              fieldDefinitions={fieldDefinitions}
+              afterAddingField={(newFieldValueAndDef) => {
+                setFieldDefinitions([...fieldDefinitions, newFieldValueAndDef]);
+                setData({
+                  ...data,
+                  field_values: [...data.field_values, newFieldValueAndDef],
+                });
+              }}
+            />
           }
         />
       </div>
 
-      {data.fields &&
-        data.fields.map((f) => (
+      {data.field_values &&
+        data.field_values.map((fv) => (
           <Field
-            label={getFieldLabel(f.field_id)}
-            value={f.value}
-            key={`note field #${f.id}`}
+            label={getFieldLabel(fv.field_id ?? fv.id)}
+            value={fv.value}
+            key={`note field #${fv.id}`}
           />
         ))}
 

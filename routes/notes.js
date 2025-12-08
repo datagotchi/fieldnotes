@@ -17,7 +17,7 @@ router.get("/", async (req, res, next) => {
           values: [n.id],
         })
         .then((result) => {
-          n.fields = result.rows;
+          n.field_values = result.rows;
         })
     )
   );
@@ -83,7 +83,7 @@ router.patch("/:note_id", async (req, res, next) => {
           values: [changes.field_id, changes.note_id, changes.field_value],
         })
         .then((result) => result.rows[0]);
-      note.fields = [newField];
+      note.field_values = [newField];
     }
 
     return res.json(note);

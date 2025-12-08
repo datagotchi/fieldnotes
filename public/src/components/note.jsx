@@ -14,8 +14,8 @@ const Note = ({ data, removeNote }) => {
 
   useEffect(() => {
     if (!fieldDefinitions) {
-      api.getFields().then((data) => {
-        setFieldDefinitions(data);
+      api.getFields().then((definitions) => {
+        setFieldDefinitions(definitions);
       });
     }
   }, [fieldDefinitions]);
@@ -35,7 +35,7 @@ const Note = ({ data, removeNote }) => {
   );
 
   return (
-    <li key={data.id} style={styles.item}>
+    <li key={`note: ${data.id}`} style={styles.item}>
       <div style={{ ...styles.itemText, whiteSpace: "pre-line" }}>
         <EasyEdit
           type="textarea"
@@ -54,10 +54,13 @@ const Note = ({ data, removeNote }) => {
         />
       </div>
 
-      {fieldDefinitions &&
-        data.fields &&
+      {data.fields &&
         data.fields.map((f) => (
-          <Field label={getFieldLabel(f.field_id)} value={f.value} />
+          <Field
+            label={getFieldLabel(f.field_id)}
+            value={f.value}
+            key={`note field #${f.id}`}
+          />
         ))}
 
       <div style={styles.itemMeta}>

@@ -6,6 +6,7 @@ import Field from "./Field";
 
 const NoteEditor = ({ note, setParentValue, onBlur, fieldDefinitions }) => {
   const [internalValue, setInternalValue] = useState(note);
+  const [selectedText, setSelectedText] = useState({});
 
   const api = useAPI();
 
@@ -15,40 +16,51 @@ const NoteEditor = ({ note, setParentValue, onBlur, fieldDefinitions }) => {
 
   const handleBlur = () => {
     setParentValue(internalValue);
+    setSelectedText({});
     if (onBlur) {
       onBlur();
     }
   };
 
-  const handleAddNewField = useCallback(
+  const doUseFieldAndUpdate = useCallback(
     async (field, value) => {
-      const newField = await api.addField(field.name);
       const updatedNote = await api.useField(newField.id, note.id, value);
       setInternalValue({
         ...internalValue,
         fields: [...internalValue.fields, ...updatedNote.fields],
       });
+      // FIXME: debug to find out if I need to call this or, like, parent.blur
       if (onBlur) {
         onBlur();
       }
     },
-    [note.id, internalValue]
+    [note.id, internalValue, onBlur]
   );
 
-  // FIXME: test/fix
+  const handleSelectNewField = useCallback(
+    async (field, value) => {
+      const newField = await api.addField(field.name);
+      return doUseFieldAndUpdate(newField, value);
+    },
+    [note.id]
+  );
+
   const handleSelectExistingField = useCallback(
     async (field, value) => {
       const updatedNote = await api.useField(field.id, note.id, value);
-      setInternalValue({
-        ...internalValue,
-        fields: [...(internalValue.fields ?? []), ...updatedNote.fields],
-      });
-      if (onBlur) {
-        onBlur();
-      }
+      return doUseFieldAndUpdate(field, value);
     },
-    [fieldDefinitions, note.id]
+    [note.id]
   );
+
+  const handleSelect = useCallback((e) => {
+    const selection = window.getSelection();
+    setSelectedText({
+      value: selection.toString(),
+      start: selection.anchorOffset,
+    });
+    // FIXME: verify it clears selectected text on blur/etc.
+  }, []);
 
   return (
     <div style={{ marginBottom: 16 }}>
@@ -56,7 +68,7 @@ const NoteEditor = ({ note, setParentValue, onBlur, fieldDefinitions }) => {
         data={internalValue}
         // setData={setInternalValue}
         fieldDefinitions={fieldDefinitions}
-        handleAddNewFieldToNote={handleAddNewField}
+        handleAddNewFieldToNote={handleSelectNewField}
         handleSelectExistingField={handleSelectExistingField}
       />
       <p
@@ -69,17 +81,19 @@ const NoteEditor = ({ note, setParentValue, onBlur, fieldDefinitions }) => {
         Select text to move it to a field
       </p>
       <textarea
+        rows="10"
+        cols="100"
         value={internalValue.text}
         onChange={handleChange}
         onBlur={handleBlur}
-        rows="10"
-        cols="100"
+        onSelect={handleSelect}
       />
-      {internalValue.fields &&
-        internalValue.fields.length > 0 &&
-        internalValue.fields.map((f) => (
-          <Field label={f.name} value={f.value} />
-        ))}
+      {selectedText.value && (
+        <p>
+          <strong>Selected text: </strong>
+          {selectedText.value}
+        </p>
+      )}
     </div>
   );
 };

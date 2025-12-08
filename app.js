@@ -28,6 +28,8 @@ pool.on("error", (err) => {
 
 var app = express();
 
+app.get("/favicon.ico", (req, res) => res.sendStatus(204));
+
 app.use(async (req, res, next) => {
   try {
     req.pool = pool;

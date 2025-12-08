@@ -48,6 +48,7 @@ export const styles = {
     border: "none",
     color: "#d0342c",
     cursor: "pointer",
+    fontSize: 16,
   },
   footer: { marginTop: 12, textAlign: "center", color: "#888" },
 };

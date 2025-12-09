@@ -7,18 +7,8 @@ import FieldControls from "./FieldControls";
 import NoteEditor from "./NoteEditor";
 import Field from "./Field";
 
-const Note = ({ data, setData, removeNote }) => {
+const Note = ({ data, setData, removeNote, fieldDefinitions }) => {
   const api = useAPI();
-
-  const [fieldDefinitions, setFieldDefinitions] = useState();
-
-  useEffect(() => {
-    if (!fieldDefinitions) {
-      api.getFields().then((definitions) => {
-        setFieldDefinitions(definitions);
-      });
-    }
-  }, [fieldDefinitions]);
 
   const getFieldLabel = useCallback(
     (fieldId) => {
@@ -67,8 +57,10 @@ const Note = ({ data, setData, removeNote }) => {
       {data.field_values &&
         data.field_values.map((fv) => (
           <Field
-            label={getFieldLabel(fv.field_id ?? fv.id)}
-            value={fv.value}
+            data={{
+              ...fv,
+              name: getFieldLabel(fv.field_id ?? fv.id),
+            }}
             key={`note field #${fv.id}`}
           />
         ))}

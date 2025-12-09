@@ -19,31 +19,30 @@ const FieldControls = ({
     [note]
   );
 
-  const handleSelectField = useCallback((field) => {
-    const alertCantUseExistingField = () => {
-      return alert(
-        "This field is already used in this note. To edit it, click or tap on its value below."
-      );
-    };
-    if (field.id) {
-      if (note.field_values.some((fv) => fv.field_id === field.id)) {
-        return alertCantUseExistingField();
+  const handleSelectField = useCallback(
+    (field) => {
+      const alertCantUseExistingField = () => {
+        return alert(
+          "This field is already used in this note. To edit it, click or tap on its value below."
+        );
+      };
+      if (field.id) {
+        if (note.field_values.some((fv) => fv.field_id === field.id)) {
+          return alertCantUseExistingField();
+        }
+        return handleAddExistingFieldToNote(field, selectedText.value);
+      } else {
+        if (usedFds.some((fd) => fd.name === field.name)) {
+          return alertCantUseExistingField();
+        }
+        return handleAddNewFieldToNote(field, selectedText.value);
       }
-      return handleAddExistingFieldToNote(field, selectedText.value);
-    } else {
-      if (usedFds.some((fd) => fd.name === field.name)) {
-        return alertCantUseExistingField();
-      }
-      return handleAddNewFieldToNote(field, selectedText.value);
-    }
-  }, []);
+    },
+    [note.field_values, usedFds, selectedText]
+  );
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 mb-8">
-      <h2 className="text-xl font-bold text-gray-800 mb-4 border-b pb-2">
-        Incremental Formalization Controls
-      </h2>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-4 bg-indigo-50 rounded-lg">
         <div
           style={{
@@ -70,9 +69,9 @@ const FieldControls = ({
                 autoComplete="off"
                 onChange={(e) => {
                   const selectedName = e.target.value;
-                  const field = fieldDefinitions.find(
-                    (fd) => fd.name === selectedName
-                  );
+                  const field =
+                    fieldDefinitions &&
+                    fieldDefinitions.find((fd) => fd.name === selectedName);
                   setSelectedField(
                     field
                       ? {
@@ -86,18 +85,19 @@ const FieldControls = ({
               />
             </label>
             <datalist id="field-to-use">
-              {fieldDefinitions
-                .filter(
-                  (fd) =>
-                    !note.field_values
-                      .map((fv) => fv.field_id || fv.id)
-                      .includes(fd.id)
-                )
-                .map((fd) => (
-                  <option key={fd.id} value={fd.name}>
-                    {fd.id}
-                  </option>
-                ))}
+              {fieldDefinitions &&
+                fieldDefinitions
+                  .filter(
+                    (fd) =>
+                      !note.field_values
+                        .map((fv) => fv.field_id || fv.id)
+                        .includes(fd.id)
+                  )
+                  .map((fd) => (
+                    <option key={fd.id} value={fd.name}>
+                      {fd.id}
+                    </option>
+                  ))}
             </datalist>
             <button
               onClick={async () => {

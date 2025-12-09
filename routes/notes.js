@@ -76,11 +76,13 @@ router.patch("/:note_id", async (req, res, next) => {
     }
 
     // insert into field_values linking table if the correct keys are specified
-    if (changes.field_id && changes.note_id && changes.field_value) {
+    if (changes.field_id && changes.field_value) {
       const newField = await req.pool
         .query({
-          text: "insert into field_values (field_id, note_id, value) values ($1::integer, $2::integer, $3::text) returning *",
-          values: [changes.field_id, changes.note_id, changes.field_value],
+          text: `insert into field_values (field_id, note_id, value) values ($1::integer, $2::integer, $3::text)
+          on conflict (field_id, note_id) do update set value = $3::text
+          returning *`,
+          values: [changes.field_id, req.params.note_id, changes.field_value],
         })
         .then((result) => result.rows[0]);
       note.field_values = [newField];

@@ -10,21 +10,19 @@ const useAPI = () => {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        text: note.trim(),
-      }),
+      body: JSON.stringify(note),
     }).then((response) => response.json());
 
   const deleteNote = (note) => fetch(`/notes/${note.id}`, { method: "DELETE" });
 
-  const updateNote = (note) =>
-    fetch(`/notes/${note.id}`, {
+  const updateNote = (notePartial) =>
+    fetch(`/notes/${notePartial.id}`, {
       method: "PATCH",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(note),
+      body: JSON.stringify(notePartial),
     }).then((response) => response.json());
 
   const getFields = () => fetch("/fields").then((response) => response.json());

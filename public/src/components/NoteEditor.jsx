@@ -23,7 +23,7 @@ const NoteEditor = ({ note, setNote, fieldDefinitions, afterAddingField }) => {
 
   const doUseFieldAndUpdate = useCallback(
     async (field, value) => {
-      // FIXME: `selectedText` is empty/has been cleared
+      // FIXME: `selectedText` is empty
       const startIndex = Math.min(selectedText.start, selectedText.end);
       const endIndex = Math.max(selectedText.start, selectedText.end);
       const textBefore = note.text.substring(0, startIndex);
@@ -49,24 +49,29 @@ const NoteEditor = ({ note, setNote, fieldDefinitions, afterAddingField }) => {
       const newField = await api.addField(field.name);
       return doUseFieldAndUpdate(newField, value);
     },
-    [note.id]
+    [note.id, doUseFieldAndUpdate]
   );
 
   const handleAddExistingFieldToNote = useCallback(
     async (field, value) => {
       return doUseFieldAndUpdate(field, value);
     },
-    [note.id]
+    [note.id, doUseFieldAndUpdate]
   );
 
   const handleSelect = (e) => {
-    const selection = window.getSelection();
-    if (selection.toString()) {
+    const textarea = e.target;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const value = textarea.value.substring(start, end);
+    if (value.length > 0) {
       setSelectedText({
-        value: selection.toString(),
-        start: selection.anchorOffset,
-        end: selection.focusOffset,
+        start,
+        end,
+        value,
       });
+    } else {
+      setSelectedText({});
     }
   };
 

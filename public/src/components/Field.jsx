@@ -14,8 +14,12 @@ const Field = ({ data }) => {
         onSave={async (newValue) => {
           const changes = await api.updateNote({
             id: data.note_id,
-            field_id: data.field_id,
-            field_value: newValue,
+            field_values: [
+              {
+                field_id: data.field_id,
+                field_value: newValue,
+              },
+            ],
           });
           data.value = changes.field_value;
         }}

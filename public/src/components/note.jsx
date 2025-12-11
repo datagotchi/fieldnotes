@@ -75,6 +75,7 @@ const Note = ({ data, setData, removeNote, fieldDefinitions }) => {
               data={{
                 ...fv,
                 name: getFieldLabel(fv.field_id ?? fv.id),
+                note_id: data.id,
               }}
               key={`note field #${fv.id}`}
             />

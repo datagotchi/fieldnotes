@@ -13,26 +13,35 @@ const NoteEditor = ({ note, setNote, fieldDefinitions, afterAddingField }) => {
     setNote({ ...note, text: e.target.value });
   };
 
-  // Track if FieldControls is focused to avoid triggering blur when interacting with it
-  const [fieldControlsFocused, setFieldControlsFocused] = useState(false);
+  const [fieldControlsShown, setFieldControlsShown] = useState(false);
 
-  const handleBlur = (e) => {
-    if (!fieldControlsFocused) {
+  const handleBlur = () => {
+    if (!fieldControlsShown) {
       setSelectedText({});
     }
   };
 
   const doUseFieldAndUpdate = useCallback(
     async (field, value) => {
-      const updatedNote = await api.useField(field.id, note.id, value);
+      // FIXME: `selectedText` is empty/has been cleared
+      const startIndex = Math.min(selectedText.start, selectedText.end);
+      const endIndex = Math.max(selectedText.start, selectedText.end);
+      const textBefore = note.text.substring(0, startIndex);
+      const textAfter = note.text.substring(endIndex);
+      const newTextValue = textBefore + textAfter;
+      const updatedNote = await api.useField(
+        note.id,
+        field.id,
+        value,
+        newTextValue
+      );
       const newFieldValue = updatedNote.field_values[0];
       return afterAddingField({
-        id: newFieldValue.field_id,
-        name: field.name,
-        value,
+        text: updatedNote.text,
+        field_values: [...note.field_values, newFieldValue],
       });
     },
-    [note.id]
+    [note.id, selectedText]
   );
 
   const handleAddNewFieldToNote = useCallback(
@@ -45,27 +54,28 @@ const NoteEditor = ({ note, setNote, fieldDefinitions, afterAddingField }) => {
 
   const handleAddExistingFieldToNote = useCallback(
     async (field, value) => {
-      const updatedNote = await api.useField(field.id, note.id, value);
       return doUseFieldAndUpdate(field, value);
     },
     [note.id]
   );
 
-  const handleSelect = useCallback((e) => {
+  const handleSelect = (e) => {
     const selection = window.getSelection();
-    setSelectedText({
-      value: selection.toString(),
-      start: selection.anchorOffset,
-    });
-  });
+    if (selection.toString()) {
+      setSelectedText({
+        value: selection.toString(),
+        start: selection.anchorOffset,
+        end: selection.focusOffset,
+      });
+    }
+  };
 
   return (
     <>
       {selectedText.value && (
         <div
-          onMouseDown={() => setFieldControlsFocused(true)}
-          onMouseUp={() => setFieldControlsFocused(false)}
-          onBlur={() => setFieldControlsFocused(false)}
+          // onFocus={() => setFieldControlsShown(true)}
+          // onBlur={() => setFieldControlsShown(false)}
           tabIndex={-1}
         >
           <FieldControls
@@ -75,6 +85,7 @@ const NoteEditor = ({ note, setNote, fieldDefinitions, afterAddingField }) => {
             fieldDefinitions={fieldDefinitions}
             handleAddNewFieldToNote={handleAddNewFieldToNote}
             handleAddExistingFieldToNote={handleAddExistingFieldToNote}
+            setFieldControlsShown={setFieldControlsShown}
           />
         </div>
       )}

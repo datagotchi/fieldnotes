@@ -29,9 +29,6 @@ const App = () => {
     api.getNotes().then((notes) => setNotes(notes));
   }, []);
 
-  const callUseFieldAPI = async (noteId, fieldValue) =>
-    api.useField(fieldValue.id, noteId, fieldValue.value);
-
   useEffect(() => {
     if (newNote.field_values.length > 0 && fieldDefinitions.length > 0) {
       const updatedFieldValues = newNote.field_values.map((fv) => {
@@ -102,8 +99,11 @@ const App = () => {
       const addedNote = await api.addNote(note);
       setNotes([addedNote, ...notes]);
       addedNote.field_values = await Promise.all(
-        newNote.field_values.map((fv) => callUseFieldAPI(addedNote.id, fv))
+        newNote.field_values.map((fv) =>
+          api.useField(addedNote.id, fv.id, fv.value)
+        )
       );
+      // TODO: update state variables instead of reloading page
       window.location.reload();
     }
   };

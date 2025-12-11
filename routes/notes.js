@@ -59,9 +59,7 @@ router.patch("/:note_id", async (req, res, next) => {
     let note = {};
 
     // update the notes table with some keys
-    const updateKeys = keys.filter(
-      (k) => k !== "field_id" && k !== "note_id" && k !== "field_value"
-    );
+    const updateKeys = keys.filter((k) => k !== "field_values");
     const set = updateKeys.map((k, i) => `"${k}" = $${i + 1}`).join(", ");
     const values = updateKeys.map((k) => changes[k]);
     if (set && values.length > 0) {
@@ -75,14 +73,18 @@ router.patch("/:note_id", async (req, res, next) => {
       note = updatedNote;
     }
 
-    // insert into field_values linking table if the correct keys are specified
-    if (changes.field_id && changes.field_value) {
+    if (changes.field_values && changes.field_values.length === 1) {
+      const newFieldValue = changes.field_values[0];
       const newField = await req.pool
         .query({
           text: `insert into field_values (field_id, note_id, value) values ($1::integer, $2::integer, $3::text)
           on conflict (field_id, note_id) do update set value = $3::text
           returning *`,
-          values: [changes.field_id, req.params.note_id, changes.field_value],
+          values: [
+            newFieldValue.field_id,
+            req.params.note_id,
+            newFieldValue.field_value,
+          ],
         })
         .then((result) => result.rows[0]);
       note.field_values = [newField];

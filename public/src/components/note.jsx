@@ -43,19 +43,24 @@ const Note = ({ data, setData, removeNote, fieldDefinitions }) => {
               note={data}
               setNote={setData}
               fieldDefinitions={fieldDefinitions}
-              afterAddingField={(newFieldValueAndDef) => {
-                if (
-                  !fieldDefinitions.find(
-                    (fd) => fd.id === newFieldValueAndDef.id
-                  )
-                ) {
-                  fieldDefinitions = [...fieldDefinitions, newFieldValueAndDef];
-                }
-                // FIXME: remove new field text from .text
-                setData({
-                  ...data,
-                  field_values: [...data.field_values, newFieldValueAndDef],
-                });
+              afterAddingField={(updatedNote) => {
+                // const newFieldValueAndDef = updatedNote.field_values[0];
+                // if (
+                //   newFieldValueAndDef &&
+                //   !fieldDefinitions.find(
+                //     (fd) => fd.id === newFieldValueAndDef.id
+                //   )
+                // ) {
+                //   fieldDefinitions = [...fieldDefinitions, newFieldValueAndDef];
+                // }
+                // const updatedText = updatedNote.text;
+                // setData({
+                //   ...data,
+                //   text: updatedText,
+                //   field_values: [...data.field_values, newFieldValueAndDef],
+                // });
+                // TODO: update state variables instead of reloading page
+                window.location.reload();
               }}
             />
           }

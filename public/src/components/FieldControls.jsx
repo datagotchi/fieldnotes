@@ -7,9 +7,16 @@ const FieldControls = ({
   fieldDefinitions,
   handleAddNewFieldToNote,
   handleAddExistingFieldToNote,
+  setFieldControlsShown,
 }) => {
   const [newFieldName, setNewFieldName] = useState("");
   const [selectedField, setSelectedField] = useState();
+
+  useEffect(() => {
+    if (setFieldControlsShown) {
+      setFieldControlsShown(true);
+    }
+  }, [setFieldControlsShown]);
 
   const usedFds = useMemo(
     () =>
@@ -20,7 +27,7 @@ const FieldControls = ({
   );
 
   const handleSelectField = useCallback(
-    (field) => {
+    async (field) => {
       const alertCantUseExistingField = () => {
         return alert(
           "This field is already used in this note. To edit it, click or tap on its value below."

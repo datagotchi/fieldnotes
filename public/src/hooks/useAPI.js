@@ -31,7 +31,13 @@ const useAPI = () => {
         return user;
       });
 
-  const getNotes = () => fetch("/notes").then((response) => response.json());
+  const getNotes = (token) =>
+    fetch("/notes", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then((response) => response.json());
 
   const addNote = (note) =>
     fetch("/notes", {

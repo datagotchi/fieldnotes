@@ -10,8 +10,13 @@ const Notes = ({ user, fieldDefinitions }) => {
   const api = useAPI();
 
   useEffect(() => {
-    if (user && !notes) {
-      api.getNotes().then((notes) => setNotes(notes));
+    if (user && notes.length === 0) {
+      api.getNotes(user.token).then((notes) => {
+        const processedNotes = notes.map((n) => {
+          // FIXME: get field names
+        });
+        setNotes(notes);
+      });
     }
   }, [user, notes]);
 

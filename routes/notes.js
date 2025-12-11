@@ -1,9 +1,9 @@
 import { Router } from "express";
 const router = Router();
 
-// FIXME: add 'auth' to routes that require authorization
+import authenticateUser from "../middleware/auth";
 
-router.get("/", async (req, res, next) => {
+router.get("/", authenticateUser, async (req, res, next) => {
   const notes = await req.pool
     .query({
       text: "select * from notes where user_id = $1::integer",
@@ -25,7 +25,7 @@ router.get("/", async (req, res, next) => {
   return res.json(notes);
 });
 
-router.post("/", async (req, res, next) => {
+router.post("/", authenticateUser, async (req, res, next) => {
   const note = req.body;
   const newNote = await req.pool
     .query({
@@ -36,7 +36,7 @@ router.post("/", async (req, res, next) => {
   return res.json(newNote);
 });
 
-router.delete("/:note_id", async (req, res, next) => {
+router.delete("/:note_id", authenticateUser, async (req, res, next) => {
   await req.pool.query({
     text: "delete from notes where id = $1::integer",
     values: [req.params.note_id],
@@ -44,7 +44,7 @@ router.delete("/:note_id", async (req, res, next) => {
   return res.sendStatus(204);
 });
 
-router.patch("/:note_id", async (req, res, next) => {
+router.patch("/:note_id", authenticateUser, async (req, res, next) => {
   if (Object.keys(req.body).length > 0) {
     const changes = req.body;
     const keys = Object.keys(changes || {});

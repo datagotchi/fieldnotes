@@ -23,7 +23,6 @@ const NoteEditor = ({ note, setNote, fieldDefinitions, afterAddingField }) => {
 
   const doUseFieldAndUpdate = useCallback(
     async (field, value) => {
-      // FIXME: `selectedText` is empty
       const startIndex = Math.min(selectedText.start, selectedText.end);
       const endIndex = Math.max(selectedText.start, selectedText.end);
       const textBefore = note.text.substring(0, startIndex);

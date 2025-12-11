@@ -6,7 +6,7 @@ const Header = () => {
   return (
     <header style={styles.header}>
       <h1 style={{ margin: 0 }}>Field Notes</h1>
-      <p style={styles.subtitle}></p>
+      <p style={styles.subtitle}>by Datagotchi Labs</p>
     </header>
   );
 };

@@ -6,7 +6,7 @@ import { createServer } from "http";
 import path from "path";
 import { Pool } from "pg";
 
-// import usersRouter from "./routes/users";
+import usersRouter from "./routes/users.js";
 import notesRouter from "./routes/notes.js";
 import fieldsRouter from "./routes/fields.js";
 // var debug = require("debug")("fieldnotes:server");
@@ -52,7 +52,7 @@ app.use(cookieParser());
 const staticPath = path.join(process.cwd(), "public/dist");
 app.use(express.static(staticPath));
 
-// app.use("/users", usersRouter);
+app.use("/users", usersRouter);
 app.use("/notes", notesRouter);
 app.use("/fields", fieldsRouter);
 

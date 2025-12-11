@@ -135,7 +135,8 @@ ALTER SEQUENCE public.notes_id_seq OWNED BY public.notes.id;
 CREATE TABLE public.users (
     id integer NOT NULL,
     email text NOT NULL,
-    password text NOT NULL
+    password text NOT NULL,
+    token text
 );
 
 
@@ -196,6 +197,8 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 --
 
 COPY public.field_values (id, field_id, note_id, value) FROM stdin;
+87	90	53	asdf
+89	91	53	there
 \.
 
 
@@ -204,6 +207,8 @@ COPY public.field_values (id, field_id, note_id, value) FROM stdin;
 --
 
 COPY public.fields (id, name) FROM stdin;
+90	test
+91	test2
 \.
 
 
@@ -212,8 +217,7 @@ COPY public.fields (id, name) FROM stdin;
 --
 
 COPY public.notes (id, user_id, text, emoji, datetime) FROM stdin;
-14	1	test	\N	2025-12-01 00:53:04.085-05
-15	1	test\n2	\N	2025-12-01 00:53:09.339-05
+53	1	hi	\N	2025-12-11 19:37:19.976-05
 \.
 
 
@@ -221,8 +225,8 @@ COPY public.notes (id, user_id, text, emoji, datetime) FROM stdin;
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.users (id, email, password) FROM stdin;
-1	bob@datagotchi.net	asdf
+COPY public.users (id, email, password, token) FROM stdin;
+2	bob@datagotchi.net	$2b$10$MkiwnfsPbqSd9fXn53YxWuV8mZ8T6TJe5befnOLi5ZgJp7AhdvFDa	$2b$10$0jl7cQa3kQtcFSbLLcZU1.19nbuQEH7bRrSA8riFXlSfZUslR.5Le
 \.
 
 
@@ -230,28 +234,28 @@ COPY public.users (id, email, password) FROM stdin;
 -- Name: field_values_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.field_values_id_seq', 6, true);
+SELECT pg_catalog.setval('public.field_values_id_seq', 89, true);
 
 
 --
 -- Name: fields_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.fields_id_seq', 21, true);
+SELECT pg_catalog.setval('public.fields_id_seq', 91, true);
 
 
 --
 -- Name: notes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.notes_id_seq', 16, true);
+SELECT pg_catalog.setval('public.notes_id_seq', 53, true);
 
 
 --
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 1, true);
+SELECT pg_catalog.setval('public.users_id_seq', 2, true);
 
 
 --
@@ -276,6 +280,14 @@ ALTER TABLE ONLY public.fields
 
 ALTER TABLE ONLY public.notes
     ADD CONSTRAINT notes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: users u_email; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT u_email UNIQUE (email);
 
 
 --

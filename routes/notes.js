@@ -1,7 +1,8 @@
 import { Router } from "express";
 const router = Router();
 
-// TODO: add 'auth' like in Inspect to get the correct user_id
+// FIXME: add 'auth' to routes that require authorization
+
 router.get("/", async (req, res, next) => {
   const notes = await req.pool
     .query({
@@ -75,8 +76,6 @@ router.patch("/:note_id", async (req, res, next) => {
 
     if (changes.field_values && changes.field_values.length === 1) {
       const newFieldValue = changes.field_values[0];
-      console.log("*** newFieldValue: ", newFieldValue);
-      console.log("*** req.params; ", req.params);
       const newField = await req.pool
         .query({
           text: `insert into field_values (field_id, note_id, value) values ($1::integer, $2::integer, $3::text)

@@ -1,6 +1,36 @@
 import { useEffect, useState } from "react";
 
 const useAPI = () => {
+  const register = (email, password) =>
+    fetch("/users/register", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    })
+      .then((response) => response.json())
+      .then((user) => {
+        document.cookie = `token=${JSON.stringify(user)}; path=/;`;
+        return user;
+      });
+
+  const login = (email, password) =>
+    fetch("/users/login", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    })
+      .then((response) => response.json())
+      .then((user) => {
+        document.cookie = `token=${JSON.stringify(user)}; path=/;`;
+        return user;
+      });
+
   const getNotes = () => fetch("/notes").then((response) => response.json());
 
   const addNote = (note) =>
@@ -57,6 +87,8 @@ const useAPI = () => {
   };
 
   return {
+    register,
+    login,
     getNotes,
     addNote,
     deleteNote,

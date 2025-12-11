@@ -21,6 +21,7 @@ export const styles = {
     padding: "10px 12px",
     borderRadius: 6,
     border: "1px solid #ddd",
+    fontSize: 16,
   },
   button: {
     padding: "10px 14px",
@@ -29,6 +30,7 @@ export const styles = {
     background: "#0366d6",
     color: "#fff",
     cursor: "pointer",
+    fontSize: 16,
   },
   list: { listStyle: "none", padding: 0, margin: 0 },
   empty: { color: "#666", padding: 12 },
@@ -46,6 +48,7 @@ export const styles = {
     border: "none",
     color: "#d0342c",
     cursor: "pointer",
+    fontSize: 16,
   },
   footer: { marginTop: 12, textAlign: "center", color: "#888" },
 };

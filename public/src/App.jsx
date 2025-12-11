@@ -181,7 +181,7 @@ const App = () => {
                 fontStyle: "italic",
               }}
             >
-              Click or tap a note text to edit it
+              Click or tap a note's text or field values to edit them
             </p>
           )}
           {notes &&

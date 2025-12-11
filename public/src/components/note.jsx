@@ -41,9 +41,17 @@ const Note = ({ data, setData, removeNote, fieldDefinitions }) => {
           editComponent={
             <NoteEditor
               note={data}
+              setNote={setData}
               fieldDefinitions={fieldDefinitions}
               afterAddingField={(newFieldValueAndDef) => {
-                setFieldDefinitions([...fieldDefinitions, newFieldValueAndDef]);
+                if (
+                  !fieldDefinitions.find(
+                    (fd) => fd.id === newFieldValueAndDef.id
+                  )
+                ) {
+                  fieldDefinitions = [...fieldDefinitions, newFieldValueAndDef];
+                }
+                // FIXME: remove new field text from .text
                 setData({
                   ...data,
                   field_values: [...data.field_values, newFieldValueAndDef],
@@ -55,15 +63,17 @@ const Note = ({ data, setData, removeNote, fieldDefinitions }) => {
       </div>
 
       {data.field_values &&
-        data.field_values.map((fv) => (
-          <Field
-            data={{
-              ...fv,
-              name: getFieldLabel(fv.field_id ?? fv.id),
-            }}
-            key={`note field #${fv.id}`}
-          />
-        ))}
+        data.field_values
+          .sort((a, b) => a.id - b.id)
+          .map((fv) => (
+            <Field
+              data={{
+                ...fv,
+                name: getFieldLabel(fv.field_id ?? fv.id),
+              }}
+              key={`note field #${fv.id}`}
+            />
+          ))}
 
       <div style={styles.itemMeta}>
         <small>{new Date(data.datetime).toLocaleString()}</small>

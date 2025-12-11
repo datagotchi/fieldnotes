@@ -4,14 +4,13 @@ import FieldControls from "./FieldControls";
 import useAPI from "../hooks/useAPI";
 import Field from "./Field";
 
-const NoteEditor = ({ note, fieldDefinitions, afterAddingField }) => {
-  const [internalValue, setInternalValue] = useState(note);
+const NoteEditor = ({ note, setNote, fieldDefinitions, afterAddingField }) => {
   const [selectedText, setSelectedText] = useState({});
 
   const api = useAPI();
 
   const handleChange = (e) => {
-    setInternalValue(e.target.value);
+    setNote({ ...note, text: e.target.value });
   };
 
   // Track if FieldControls is focused to avoid triggering blur when interacting with it
@@ -26,13 +25,6 @@ const NoteEditor = ({ note, fieldDefinitions, afterAddingField }) => {
   const doUseFieldAndUpdate = useCallback(
     async (field, value) => {
       const updatedNote = await api.useField(field.id, note.id, value);
-      // setInternalValue({
-      //   ...internalValue,
-      //   field_values: [
-      //     ...internalValue.field_values,
-      //     ...updatedNote.field_values,
-      //   ],
-      // });
       const newFieldValue = updatedNote.field_values[0];
       return afterAddingField({
         id: newFieldValue.field_id,
@@ -40,7 +32,7 @@ const NoteEditor = ({ note, fieldDefinitions, afterAddingField }) => {
         value,
       });
     },
-    [note.id, internalValue]
+    [note.id]
   );
 
   const handleAddNewFieldToNote = useCallback(
@@ -100,7 +92,7 @@ const NoteEditor = ({ note, fieldDefinitions, afterAddingField }) => {
       <textarea
         rows="10"
         cols="100"
-        value={internalValue.text}
+        value={note.text}
         onChange={handleChange}
         onBlur={handleBlur}
         onSelect={handleSelect}

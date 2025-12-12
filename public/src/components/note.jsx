@@ -8,7 +8,7 @@ import NoteEditor from "./NoteEditor";
 import Field from "./Field";
 
 const Note = ({ user, data, setData, removeNote, fieldDefinitions }) => {
-  const api = useAPI(user?.token);
+  const api = useAPI(user);
 
   const getFieldLabel = useCallback(
     (fieldId) => {

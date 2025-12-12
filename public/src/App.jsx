@@ -5,22 +5,24 @@ import { styles } from "./constants";
 import useAPI from "./hooks/useAPI";
 import NoteCreator from "./components/NoteCreator";
 import Notes from "./components/Notes";
+import { useUserContext } from "./contexts/useUserContext";
 
 const App = () => {
   const [fieldDefinitions, setFieldDefinitions] = useState();
-  const [user, setUser] = useState();
+  // const [user, setUser] = useState();
+  const { user, loading, isAuthenticated, api, setUser } = useUserContext();
 
-  const api = useAPI(user);
+  // const api = useAPI(user);
 
-  useEffect(() => {
-    const cookieUser = JSON.parse(
-      document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("token="))
-        ?.split("=")[1]
-    );
-    setUser(cookieUser);
-  }, []);
+  // useEffect(() => {
+  //   const cookieUser = JSON.parse(
+  //     document.cookie
+  //       .split("; ")
+  //       .find((row) => row.startsWith("token="))
+  //       ?.split("=")[1]
+  //   );
+  //   setUser(cookieUser);
+  // }, []);
 
   useEffect(() => {
     if (api.email && api.token && !fieldDefinitions) {
@@ -28,68 +30,68 @@ const App = () => {
         setFieldDefinitions(definitions);
       });
     }
-  }, [api.email, api.token, fieldDefinitions]);
+  }, [api, api?.email, api?.token, fieldDefinitions]);
 
   return (
     <div style={styles.app}>
-      <Header user={user} />
+      <Header />
 
       <main style={styles.main}>
-        {api.email && api.token && (
+        {isAuthenticated && (
           <>
-            <NoteCreator user={user} fieldDefinitions={fieldDefinitions} />
-            <Notes user={user} fieldDefinitions={fieldDefinitions} />
+            <NoteCreator fieldDefinitions={fieldDefinitions} />
+            <Notes fieldDefinitions={fieldDefinitions} />
           </>
         )}
-        {!api.email ||
-          (!api.token && (
-            <>
-              <h2>Login</h2>
-              <form
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "1rem",
-                  maxWidth: 300,
-                  margin: "0 auto",
-                }}
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  const email = e.target.email.value;
-                  const password = e.target.password.value;
-                  const loggedInUser = await api.login(email, password);
-                  if (loggedInUser) setUser(loggedInUser);
-                  else alert("Invalid credentials");
+        {/* FIXME: verify login and register show up and work given the new user context -- i.e., `api` still works for them */}
+        {!isAuthenticated && (
+          <>
+            <h2>Login</h2>
+            <form
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "1rem",
+                maxWidth: 300,
+                margin: "0 auto",
+              }}
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const email = e.target.email.value;
+                const password = e.target.password.value;
+                const loggedInUser = await api.login(email, password);
+                if (loggedInUser) setUser(loggedInUser);
+                else alert("Invalid credentials");
+              }}
+            >
+              <label>
+                Email:
+                <input type="email" name="email" required />
+              </label>
+              <label>
+                Password:
+                <input type="password" name="password" required />
+              </label>
+              <button type="submit">Login</button>
+              Don't have an account?{" "}
+              <button
+                type="button"
+                onClick={() => {
+                  const email = prompt("Enter your email:");
+                  const password = prompt("Enter your password:");
+                  if (email && password) {
+                    api.register(email, password).then((registeredUser) => {
+                      if (registeredUser) setUser(registeredUser);
+                      else alert("Registration failed");
+                    });
+                  }
                 }}
               >
-                <label>
-                  Email:
-                  <input type="email" name="email" required />
-                </label>
-                <label>
-                  Password:
-                  <input type="password" name="password" required />
-                </label>
-                <button type="submit">Login</button>
-                Don't have an account?{" "}
-                <button
-                  type="button"
-                  onClick={() => {
-                    const email = prompt("Enter your email:");
-                    const password = prompt("Enter your password:");
-                    if (email && password) {
-                      api.register(email, password).then((registeredUser) => {
-                        if (registeredUser) setUser(registeredUser);
-                        else alert("Registration failed");
-                      });
-                    }
-                  }}
-                >
-                  Register
-                </button>
-              </form>
-            </>
-          ))}
+                Register
+              </button>
+            </form>
+          </>
+        )}
       </main>
 
       <footer style={styles.footer}></footer>

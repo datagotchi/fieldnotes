@@ -3,11 +3,12 @@ import React, { useEffect, useState } from "react";
 import { styles } from "../constants";
 import Note from "./note";
 import useAPI from "../hooks/useAPI";
+import { useUserContext } from "../contexts/useUserContext";
 
-const Notes = ({ user, fieldDefinitions }) => {
+const Notes = ({ fieldDefinitions }) => {
   const [notes, setNotes] = useState();
 
-  const api = useAPI(user);
+  const { user, api } = useUserContext();
 
   useEffect(() => {
     if (user && fieldDefinitions && !notes) {

@@ -4,7 +4,6 @@ const authenticateUser = async (req, res, next) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
   const emailHeader = req.headers["x-email"];
-  console.log("*** emailHeader: ", emailHeader);
   if (token && emailHeader) {
     const user = await req.pool
       .query({

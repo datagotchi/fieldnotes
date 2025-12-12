@@ -1,12 +1,29 @@
 import React from "react";
 
 import { styles } from "../constants";
+import { useUserContext } from "../contexts/useUserContext";
 
-const Header = ({ user }) => {
+const Header = () => {
+  const { user } = useUserContext();
+
   return (
     <header style={styles.header}>
       <h1 style={{ margin: 0 }}>Field Notes by Datagotchi Labs</h1>
-      <p style={styles.subtitle}>User: {user ? user.email : "Not logged in"}</p>
+      <p style={styles.subtitle}>
+        User: {user ? user.email : "Not logged in"}{" "}
+        {user && (
+          <a
+            href=""
+            onClick={(e) => {
+              e.preventDefault();
+              document.cookie = `token=; path=/;`;
+              window.location.reload();
+            }}
+          >
+            Logout
+          </a>
+        )}
+      </p>
     </header>
   );
 };

@@ -4,12 +4,13 @@ import EasyEdit from "react-easy-edit";
 import { styles } from "./../constants";
 import useAPI from "../hooks/useAPI";
 import FieldControls from "./FieldControls";
+import { useUserContext } from "../contexts/useUserContext";
 
-const NoteCreator = ({ user, fieldDefinitions }) => {
+const NoteCreator = ({ fieldDefinitions }) => {
   const [newNote, setNewNote] = useState({ text: "", field_values: [] });
   const [selectedText, setSelectedText] = useState("");
 
-  const api = useAPI(user);
+  const { user, api } = useUserContext();
 
   useEffect(() => {
     if (

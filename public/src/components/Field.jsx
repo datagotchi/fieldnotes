@@ -3,8 +3,8 @@ import EasyEdit from "react-easy-edit";
 
 import useAPI from "../hooks/useAPI";
 
-const Field = ({ data }) => {
-  const api = useAPI();
+const Field = ({ user, data }) => {
+  const api = useAPI(user);
   return (
     <label style={{ display: "flex", alignItems: "center", gap: "0.5em" }}>
       <strong>{data.name}:</strong>

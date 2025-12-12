@@ -9,11 +9,10 @@ import { Pool } from "pg";
 import usersRouter from "./routes/users.js";
 import notesRouter from "./routes/notes.js";
 import fieldsRouter from "./routes/fields.js";
-// var debug = require("debug")("fieldnotes:server");
 
 const pool = new Pool({
   user: "postgres",
-  password: "p4ssw0rd", // TODO: the ident is configured as `trust`, so this is redundant
+  password: "p4ssw0rd", // TODO: the ident is configured as `trust`, so is this redundant?
   database: "fieldnotes",
   host: "localhost",
   port: 5432,
@@ -111,7 +110,6 @@ function onError(error) {
 function onListening() {
   var addr = server.address();
   var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
-  // debug("Listening on " + bind);
   console.log("Listening on " + bind);
 }
 

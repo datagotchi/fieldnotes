@@ -1,13 +1,13 @@
 import { Router } from "express";
 const router = Router();
 
-import authenticateUser from "../middleware/auth";
+import authenticateUser from "../middleware/auth.js";
 
 router.get("/", authenticateUser, async (req, res, next) => {
   const notes = await req.pool
     .query({
       text: "select * from notes where user_id = $1::integer",
-      values: [1],
+      values: [req.user.id],
     })
     .then((response) => response.rows);
   await Promise.all(
@@ -30,7 +30,7 @@ router.post("/", authenticateUser, async (req, res, next) => {
   const newNote = await req.pool
     .query({
       text: "insert into notes (text, datetime, user_id) values ($1::text, $2::timestamp, $3::integer) returning *",
-      values: [note.text, new Date().toISOString(), 1],
+      values: [note.text, new Date().toISOString(), req.user.id],
     })
     .then((response) => response.rows[0]);
   return res.json(newNote);

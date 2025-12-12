@@ -5,20 +5,26 @@ import Note from "./note";
 import useAPI from "../hooks/useAPI";
 
 const Notes = ({ user, fieldDefinitions }) => {
-  const [notes, setNotes] = useState([]);
+  const [notes, setNotes] = useState();
 
-  const api = useAPI();
+  const api = useAPI(user);
 
   useEffect(() => {
-    if (user && notes.length === 0) {
+    if (user && fieldDefinitions && !notes) {
       api.getNotes(user.token).then((notes) => {
         const processedNotes = notes.map((n) => {
-          // FIXME: get field names
+          n.field_values.forEach((fv) => {
+            const fieldDefinition = fieldDefinitions.find(
+              (fd) => fd.id === fv.field_id
+            );
+            fv.name = fieldDefinition.name;
+          });
+          return n;
         });
-        setNotes(notes);
+        setNotes(processedNotes);
       });
     }
-  }, [user, notes]);
+  }, [user, fieldDefinitions, notes]);
 
   return (
     <ul style={styles.list}>
@@ -42,6 +48,7 @@ const Notes = ({ user, fieldDefinitions }) => {
           .sort((a, b) => new Date(b.datetime) - new Date(a.datetime))
           .map((note) => (
             <Note
+              user={user}
               data={note}
               setData={(updatedNote) => {
                 const updatedNotes = notes.map((n) =>

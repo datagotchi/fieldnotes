@@ -4,10 +4,16 @@ import FieldControls from "./FieldControls";
 import useAPI from "../hooks/useAPI";
 import Field from "./Field";
 
-const NoteEditor = ({ note, setNote, fieldDefinitions, afterAddingField }) => {
+const NoteEditor = ({
+  user,
+  note,
+  setNote,
+  fieldDefinitions,
+  afterAddingField,
+}) => {
   const [selectedText, setSelectedText] = useState({});
 
-  const api = useAPI();
+  const api = useAPI(user);
 
   const handleChange = (e) => {
     setNote({ ...note, text: e.target.value });

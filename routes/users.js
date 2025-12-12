@@ -58,7 +58,7 @@ router.post("/login", async (req, res, next) => {
   return res.status(404).send("Email adadress not found."); // TODO: combine this with other error(s) for more security
 });
 
-// TODO: router.get - auth
-// TODO: router.patch - auth
+// TODO: router.get - authenticateUser
+// TODO: router.patch - authenticateUser
 
 export default router;

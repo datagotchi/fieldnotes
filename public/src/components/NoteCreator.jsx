@@ -2,11 +2,14 @@ import React, { useCallback, useEffect, useState } from "react";
 import EasyEdit from "react-easy-edit";
 
 import { styles } from "./../constants";
+import useAPI from "../hooks/useAPI";
 import FieldControls from "./FieldControls";
 
 const NoteCreator = ({ user, fieldDefinitions }) => {
   const [newNote, setNewNote] = useState({ text: "", field_values: [] });
   const [selectedText, setSelectedText] = useState("");
+
+  const api = useAPI(user);
 
   useEffect(() => {
     if (
@@ -80,7 +83,6 @@ const NoteCreator = ({ user, fieldDefinitions }) => {
   const submitNewNote = async (note) => {
     if (note.text || note.field_values.length > 0) {
       const addedNote = await api.addNote(note);
-      setNotes([addedNote, ...notes]);
       addedNote.field_values = await Promise.all(
         newNote.field_values.map((fv) =>
           api.useField(addedNote.id, fv.id, fv.value)

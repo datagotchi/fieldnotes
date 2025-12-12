@@ -7,10 +7,10 @@ import NoteCreator from "./components/NoteCreator";
 import Notes from "./components/Notes";
 
 const App = () => {
-  const [fieldDefinitions, setFieldDefinitions] = useState([]);
+  const [fieldDefinitions, setFieldDefinitions] = useState();
   const [user, setUser] = useState();
 
-  const api = useAPI();
+  const api = useAPI(user);
 
   useEffect(() => {
     const cookieUser = JSON.parse(
@@ -23,72 +23,73 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    if (user && !fieldDefinitions) {
+    if (api.email && api.token && !fieldDefinitions) {
       api.getFields().then((definitions) => {
         setFieldDefinitions(definitions);
       });
     }
-  }, [user, fieldDefinitions]);
+  }, [api.email, api.token, fieldDefinitions]);
 
   return (
     <div style={styles.app}>
-      <Header />
+      <Header user={user} />
 
       <main style={styles.main}>
-        {user && (
+        {api.email && api.token && (
           <>
             <NoteCreator user={user} fieldDefinitions={fieldDefinitions} />
             <Notes user={user} fieldDefinitions={fieldDefinitions} />
           </>
         )}
-        {!user && (
-          <>
-            <h2>Login</h2>
-            <form
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "1rem",
-                maxWidth: 300,
-                margin: "0 auto",
-              }}
-              onSubmit={async (e) => {
-                e.preventDefault();
-                const email = e.target.email.value;
-                const password = e.target.password.value;
-                const loggedInUser = await api.login(email, password);
-                if (loggedInUser) setUser(loggedInUser);
-                else alert("Invalid credentials");
-              }}
-            >
-              <label>
-                Email:
-                <input type="email" name="email" required />
-              </label>
-              <label>
-                Password:
-                <input type="password" name="password" required />
-              </label>
-              <button type="submit">Login</button>
-              Don't have an account?{" "}
-              <button
-                type="button"
-                onClick={() => {
-                  const email = prompt("Enter your email:");
-                  const password = prompt("Enter your password:");
-                  if (email && password) {
-                    api.register(email, password).then((registeredUser) => {
-                      if (registeredUser) setUser(registeredUser);
-                      else alert("Registration failed");
-                    });
-                  }
+        {!api.email ||
+          (!api.token && (
+            <>
+              <h2>Login</h2>
+              <form
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "1rem",
+                  maxWidth: 300,
+                  margin: "0 auto",
+                }}
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const email = e.target.email.value;
+                  const password = e.target.password.value;
+                  const loggedInUser = await api.login(email, password);
+                  if (loggedInUser) setUser(loggedInUser);
+                  else alert("Invalid credentials");
                 }}
               >
-                Register
-              </button>
-            </form>
-          </>
-        )}
+                <label>
+                  Email:
+                  <input type="email" name="email" required />
+                </label>
+                <label>
+                  Password:
+                  <input type="password" name="password" required />
+                </label>
+                <button type="submit">Login</button>
+                Don't have an account?{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const email = prompt("Enter your email:");
+                    const password = prompt("Enter your password:");
+                    if (email && password) {
+                      api.register(email, password).then((registeredUser) => {
+                        if (registeredUser) setUser(registeredUser);
+                        else alert("Registration failed");
+                      });
+                    }
+                  }}
+                >
+                  Register
+                </button>
+              </form>
+            </>
+          ))}
       </main>
 
       <footer style={styles.footer}></footer>

@@ -7,8 +7,8 @@ import FieldControls from "./FieldControls";
 import NoteEditor from "./NoteEditor";
 import Field from "./Field";
 
-const Note = ({ data, setData, removeNote, fieldDefinitions }) => {
-  const api = useAPI();
+const Note = ({ user, data, setData, removeNote, fieldDefinitions }) => {
+  const api = useAPI(user?.token);
 
   const getFieldLabel = useCallback(
     (fieldId) => {
@@ -40,6 +40,7 @@ const Note = ({ data, setData, removeNote, fieldDefinitions }) => {
           }}
           editComponent={
             <NoteEditor
+              user={user}
               note={data}
               setNote={setData}
               fieldDefinitions={fieldDefinitions}
@@ -72,6 +73,7 @@ const Note = ({ data, setData, removeNote, fieldDefinitions }) => {
           .sort((a, b) => a.id - b.id)
           .map((fv) => (
             <Field
+              user={user}
               data={{
                 ...fv,
                 name: getFieldLabel(fv.field_id ?? fv.id),

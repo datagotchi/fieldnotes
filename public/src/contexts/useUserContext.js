@@ -25,7 +25,7 @@ export const UserProvider = ({ children }) => {
         .find((row) => row.startsWith("token="))
         ?.split("=");
 
-      if (cookieUserString) {
+      if (cookieUserString && cookieUserString[1]) {
         const cookieUser = JSON.parse(decodeURIComponent(cookieUserString[1]));
         setUser(cookieUser);
       }

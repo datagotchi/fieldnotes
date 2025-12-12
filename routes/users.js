@@ -12,10 +12,14 @@ router.post("/register", async (req, res, next) => {
   const hashedPassword = await bcrypt.hash(password.trim(), 10);
   const token = await bcrypt.hash(email + Date.now(), 10);
 
-  const user = await req.pool.query({
-    text: "insert into users (email, password, token) values ($1::text, $2::text, $3::text) returning *",
-    values: [email, hashedPassword, token],
-  });
+  const user = await req.pool
+    .query({
+      text: "insert into users (email, password, token) values ($1::text, $2::text, $3::text) returning *",
+      values: [email, hashedPassword, token],
+    })
+    .then((result) => result.rows[0]);
+
+  console.log("*** user: ", user);
 
   // omit sending password
   return res.status(200).json({
@@ -43,8 +47,8 @@ router.post("/login", async (req, res, next) => {
       const token = await bcrypt.hash(email + Date.now(), 10);
       const user = await req.pool
         .query({
-          text: "update users set token = $1::text returning *",
-          values: [token],
+          text: "update users set token = $1::text where email = $2::text returning *",
+          values: [token, email],
         })
         .then((result) => result.rows[0]);
       // omit sending password

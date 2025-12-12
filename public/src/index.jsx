@@ -2,6 +2,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 
 import App from "./App";
+import { UserProvider } from "./contexts/useUserContext";
 
 const container = document.getElementById("root");
 if (!container) {
@@ -10,4 +11,8 @@ if (!container) {
   );
 }
 
-createRoot(container).render(<App />);
+createRoot(container).render(
+  <UserProvider>
+    <App />
+  </UserProvider>
+);

@@ -1,12 +1,13 @@
 import { Router } from "express";
 const router = Router();
 
-// TODO: add 'auth' like in Inspect to get the correct user_id
-router.get("/", async (req, res, next) => {
+import authenticateUser from "../middleware/auth.js";
+
+router.get("/", authenticateUser, async (req, res, next) => {
   const notes = await req.pool
     .query({
       text: "select * from notes where user_id = $1::integer",
-      values: [1],
+      values: [req.user.id],
     })
     .then((response) => response.rows);
   await Promise.all(
@@ -24,18 +25,18 @@ router.get("/", async (req, res, next) => {
   return res.json(notes);
 });
 
-router.post("/", async (req, res, next) => {
+router.post("/", authenticateUser, async (req, res, next) => {
   const note = req.body;
   const newNote = await req.pool
     .query({
       text: "insert into notes (text, datetime, user_id) values ($1::text, $2::timestamp, $3::integer) returning *",
-      values: [note.text, new Date().toISOString(), 1],
+      values: [note.text, new Date().toISOString(), req.user.id],
     })
     .then((response) => response.rows[0]);
   return res.json(newNote);
 });
 
-router.delete("/:note_id", async (req, res, next) => {
+router.delete("/:note_id", authenticateUser, async (req, res, next) => {
   await req.pool.query({
     text: "delete from notes where id = $1::integer",
     values: [req.params.note_id],
@@ -43,7 +44,7 @@ router.delete("/:note_id", async (req, res, next) => {
   return res.sendStatus(204);
 });
 
-router.patch("/:note_id", async (req, res, next) => {
+router.patch("/:note_id", authenticateUser, async (req, res, next) => {
   if (Object.keys(req.body).length > 0) {
     const changes = req.body;
     const keys = Object.keys(changes || {});
@@ -75,8 +76,6 @@ router.patch("/:note_id", async (req, res, next) => {
 
     if (changes.field_values && changes.field_values.length === 1) {
       const newFieldValue = changes.field_values[0];
-      console.log("*** newFieldValue: ", newFieldValue);
-      console.log("*** req.params; ", req.params);
       const newField = await req.pool
         .query({
           text: `insert into field_values (field_id, note_id, value) values ($1::integer, $2::integer, $3::text)

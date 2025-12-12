@@ -4,10 +4,16 @@ import FieldControls from "./FieldControls";
 import useAPI from "../hooks/useAPI";
 import Field from "./Field";
 
-const NoteEditor = ({ note, setNote, fieldDefinitions, afterAddingField }) => {
+const NoteEditor = ({
+  user,
+  note,
+  setNote,
+  fieldDefinitions,
+  afterAddingField,
+}) => {
   const [selectedText, setSelectedText] = useState({});
 
-  const api = useAPI();
+  const api = useAPI(user);
 
   const handleChange = (e) => {
     setNote({ ...note, text: e.target.value });
@@ -23,7 +29,6 @@ const NoteEditor = ({ note, setNote, fieldDefinitions, afterAddingField }) => {
 
   const doUseFieldAndUpdate = useCallback(
     async (field, value) => {
-      // FIXME: `selectedText` is empty
       const startIndex = Math.min(selectedText.start, selectedText.end);
       const endIndex = Math.max(selectedText.start, selectedText.end);
       const textBefore = note.text.substring(0, startIndex);

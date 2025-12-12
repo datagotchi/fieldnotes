@@ -58,6 +58,11 @@ basic-auth@~2.0.0:
   dependencies:
     safe-buffer "5.1.2"
 
+bcryptjs@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/bcryptjs/-/bcryptjs-3.0.3.tgz#4b93d6a398c48bfc9f32ee65d301174a8a8ea56f"
+  integrity sha512-GlF5wPWnSa/X5LKM1o0wz0suXIINz1iHRLvTS+sLyi7XPbe5ycmYI3DlZqVGZZtDgl4DmasFg7gOB3JYbphV5g==
+
 body-parser@1.18.3:
   version "1.18.3"
   resolved "https://registry.yarnpkg.com/body-parser/-/body-parser-1.18.3.tgz#5b292198ffdd553b3a0f20ded0592b956955c8b4"
@@ -586,11 +591,6 @@ raw-body@2.3.3:
     http-errors "1.6.3"
     iconv-lite "0.4.23"
     unpipe "1.0.0"
-
-react-easy-edit@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/react-easy-edit/-/react-easy-edit-2.0.0.tgz#7d223f71dd5aaea04e48b73aeedf74eaf358455e"
-  integrity sha512-Zsssj2RA3s3fNfFw5AzawKEQa9eUa774pXRo347vOU3G9Qqb6939lsIAPlltARakxoB1ct9+naj4M6jNs1iNFQ==
 
 repeat-string@^1.5.2:
   version "1.6.1"

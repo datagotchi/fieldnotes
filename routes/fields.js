@@ -1,14 +1,16 @@
 import { Router } from "express";
 const router = Router();
 
-router.get("/", async (req, res, next) => {
+import authenticateUser from "../middleware/auth.js";
+
+router.get("/", authenticateUser, async (req, res, next) => {
   const fields = await req.pool
     .query("select * from fields")
     .then((result) => result.rows);
   return res.json(fields);
 });
 
-router.post("/", async (req, res, next) => {
+router.post("/", authenticateUser, async (req, res, next) => {
   const { name } = req.body;
   if (name) {
     const newField = await req.pool

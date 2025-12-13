@@ -14,6 +14,19 @@ const useAPI = (cookieUser) => {
     }
   }, [cookieUser, email, token]);
 
+  const _setCookieAndReturnUser = (user) => {
+    // Set the cookie to expire in 7 days (7 days * 24 hours * 60 minutes * 60 seconds)
+    const expirationTimeInSeconds = 7 * 24 * 60 * 60;
+    // TODO: enable secure cookie when we switch to HTTPS
+    // document.cookie = `token=${JSON.stringify(
+    //   user
+    // )}; path=/; max-age=${expirationTimeInSeconds}; SameSite=Lax; Secure`;
+    document.cookie = `token=${JSON.stringify(
+      user
+    )}; path=/; max-age=${expirationTimeInSeconds}; SameSite=Lax`;
+    return user;
+  };
+
   const register = (email, password) =>
     fetch("/users/register", {
       method: "POST",
@@ -24,10 +37,7 @@ const useAPI = (cookieUser) => {
       body: JSON.stringify({ email, password }),
     })
       .then((response) => response.json())
-      .then((user) => {
-        document.cookie = `token=${JSON.stringify(user)}; path=/;`;
-        return user;
-      });
+      .then(_setCookieAndReturnUser);
 
   const login = (email, password) =>
     fetch("/users/login", {
@@ -39,10 +49,7 @@ const useAPI = (cookieUser) => {
       body: JSON.stringify({ email, password }),
     })
       .then((response) => response.json())
-      .then((user) => {
-        document.cookie = `token=${JSON.stringify(user)}; path=/;`;
-        return user;
-      });
+      .then(_setCookieAndReturnUser);
 
   const getNotes = useCallback(
     () =>

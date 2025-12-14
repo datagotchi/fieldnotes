@@ -68,21 +68,24 @@ const Note = ({ user, data, setData, removeNote, fieldDefinitions }) => {
         />
       </div>
 
-      {data.field_values &&
-        data.field_values
-          .sort((a, b) => a.id - b.id)
-          .map((fv) => (
-            <Field
-              user={user}
-              data={{
-                ...fv,
-                name: getFieldLabel(fv.field_id ?? fv.id),
-                note_id: data.id,
-              }}
-              key={`note field #${fv.id}`}
-            />
-          ))}
-
+      <table>
+        <tbody>
+          {data.field_values &&
+            data.field_values
+              .sort((a, b) => a.id - b.id)
+              .map((fv) => (
+                <Field
+                  user={user}
+                  data={{
+                    ...fv,
+                    name: getFieldLabel(fv.field_id ?? fv.id),
+                    note_id: data.id,
+                  }}
+                  key={`note field #${fv.id}`}
+                />
+              ))}
+        </tbody>
+      </table>
       <div style={styles.itemMeta}>
         <small>{new Date(data.datetime).toLocaleString()}</small>
         <button

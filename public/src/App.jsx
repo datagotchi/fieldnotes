@@ -43,7 +43,6 @@ const App = () => {
             <Notes fieldDefinitions={fieldDefinitions} />
           </>
         )}
-        {/* FIXME: verify login and register show up and work given the new user context -- i.e., `api` still works for them */}
         {!isAuthenticated && (
           <>
             <h2>Login</h2>

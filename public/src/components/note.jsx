@@ -68,7 +68,7 @@ const Note = ({ user, data, setData, removeNote, fieldDefinitions }) => {
         />
       </div>
 
-      <table>
+      <table className="fieldTable">
         <tbody>
           {data.field_values &&
             data.field_values

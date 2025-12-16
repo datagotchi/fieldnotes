@@ -9,20 +9,8 @@ import { useUserContext } from "./contexts/useUserContext";
 
 const App = () => {
   const [fieldDefinitions, setFieldDefinitions] = useState();
-  // const [user, setUser] = useState();
+
   const { user, loading, isAuthenticated, api, setUser } = useUserContext();
-
-  // const api = useAPI(user);
-
-  // useEffect(() => {
-  //   const cookieUser = JSON.parse(
-  //     document.cookie
-  //       .split("; ")
-  //       .find((row) => row.startsWith("token="))
-  //       ?.split("=")[1]
-  //   );
-  //   setUser(cookieUser);
-  // }, []);
 
   useEffect(() => {
     if (api.email && api.token && !fieldDefinitions) {

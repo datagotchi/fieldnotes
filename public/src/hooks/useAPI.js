@@ -51,6 +51,12 @@ const useAPI = (cookieUser) => {
       .then((response) => response.json())
       .then(_setCookieAndReturnUser);
 
+  const logout = (email) =>
+    fetch(`/users/logout/${encodeURIComponent(email)}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}`, "x-email": email },
+    });
+
   const getNotes = useCallback(
     () =>
       fetch("/notes", {
@@ -157,6 +163,7 @@ const useAPI = (cookieUser) => {
     token,
     register,
     login,
+    logout,
     getNotes,
     addNote,
     deleteNote,

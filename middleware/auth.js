@@ -14,13 +14,13 @@ const authenticateUser = async (req, res, next) => {
 
     if (user) {
       try {
-        const existingToken = await req.pool
+        const foundToken = await req.pool
           .query({
-            text: "select * from sessions where user_id = (select id from users where email = $1::text)",
-            values: [email],
+            text: "select * from sessions where user_id = (select id from users where email = $1::text) and token = $2::text",
+            values: [email, token],
           })
           .then((result) => result.rows[0].token);
-        if (existingToken && existingToken === token) {
+        if (foundToken) {
           req.user = user;
           return next(); // Proceed to the main route handler [2]
         }

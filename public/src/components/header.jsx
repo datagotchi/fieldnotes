@@ -4,7 +4,7 @@ import { styles } from "../constants";
 import { useUserContext } from "../contexts/useUserContext";
 
 const Header = () => {
-  const { user } = useUserContext();
+  const { user, api } = useUserContext();
 
   return (
     <header style={styles.header}>
@@ -14,9 +14,10 @@ const Header = () => {
         {user && (
           <a
             href=""
-            onClick={(e) => {
+            onClick={async (e) => {
               e.preventDefault();
               document.cookie = `token=; path=/;`;
+              await api.logout(user.email);
               window.location.reload();
             }}
           >

@@ -12,6 +12,7 @@
   },
   "type": "module",
   "devDependencies": {
-    "@libsql/client": "^0.15.15"
+    "@libsql/client": "^0.15.15",
+    "pg": "^8.16.3"
   }
 }

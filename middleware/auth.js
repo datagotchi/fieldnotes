@@ -19,14 +19,16 @@ const authenticateUser = async (req, res, next) => {
             text: "select * from sessions where user_id = (select id from users where email = $1::text) and token = $2::text",
             values: [email, token],
           })
-          .then((result) => result.rows[0].token);
+          .then((result) => result.rows[0]?.token);
         if (foundToken) {
           req.user = user;
           return next(); // Proceed to the main route handler [2]
         }
       } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Server error during authentication" });
+        return res
+          .status(500)
+          .json({ error: "Server error during authentication" });
       }
     }
 

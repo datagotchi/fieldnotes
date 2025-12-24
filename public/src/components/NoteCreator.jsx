@@ -2,12 +2,11 @@ import React, { useCallback, useEffect, useState } from "react";
 import EasyEdit from "react-easy-edit";
 
 import { styles } from "./../constants";
-import useAPI from "../hooks/useAPI";
 import FieldControls from "./FieldControls";
 import { useUserContext } from "../contexts/useUserContext";
 
-const NoteCreator = ({ fieldDefinitions }) => {
-  const [newNote, setNewNote] = useState({ text: "", field_values: [] });
+const NoteCreator = ({ fieldDefinitions, newNote, setNewNote }) => {
+  // const [newNote, setNewNote] = useState({ text: "", field_values: [] });
   const [selectedText, setSelectedText] = useState("");
 
   const { user, api } = useUserContext();
@@ -108,7 +107,7 @@ const NoteCreator = ({ fieldDefinitions }) => {
         style={styles.input}
         aria-label="New note"
         rows="10"
-        cols="100"
+        cols="67"
       />
       {newNote.field_values.length > 0 &&
         newNote.field_values.map((fv) => (

@@ -5,7 +5,16 @@ import authenticateUser from "../middleware/auth.js";
 
 router.get("/", authenticateUser, async (req, res, next) => {
   const fields = await req.pool
-    .query("select * from fields")
+    .query(
+      `select 
+        f.id, 
+        f.name, 
+        count(fv.id) as use_count
+      from fields f
+      left join field_values fv on f.id = fv.field_id
+      group by f.id, f.name
+      order by use_count desc, f.name asc`
+    )
     .then((result) => result.rows);
   return res.json(fields);
 });

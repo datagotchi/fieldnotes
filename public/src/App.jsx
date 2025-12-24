@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import Header from "./components/header";
 import { styles } from "./constants";
@@ -6,9 +6,19 @@ import useAPI from "./hooks/useAPI";
 import NoteCreator from "./components/NoteCreator";
 import Notes from "./components/Notes";
 import { useUserContext } from "./contexts/useUserContext";
+import FieldCloud from "./components/FieldCloud";
 
 const App = () => {
   const [fieldDefinitions, setFieldDefinitions] = useState();
+  const [activeSelection, setActiveSelection] = useState({
+    noteId: null,
+    text: "",
+    originalText: "",
+  });
+  const [newNote, setNewNote] = useState({ text: "", field_values: [] });
+
+  const clearSelection = () =>
+    setActiveSelection({ noteId: null, text: "", fullText: "" });
 
   const { user, loading, isAuthenticated, api, setUser } = useUserContext();
 
@@ -20,6 +30,39 @@ const App = () => {
     }
   }, [api, api?.email, api?.token, fieldDefinitions]);
 
+  const handlePillClick = useCallback(
+    async (field) => {
+      if (activeSelection.noteId && activeSelection.text) {
+        // 1. Calculate the new note text by removing the selection
+        const textBefore = activeSelection.fullText.substring(
+          0,
+          activeSelection.startIndex
+        );
+        const textAfter = activeSelection.fullText.substring(
+          activeSelection.endIndex
+        );
+        const newNoteBody = textBefore + textAfter;
+
+        // 2. Perform the PATCH using your existing hook
+        await api.useField(
+          activeSelection.noteId,
+          field.id,
+          activeSelection.text,
+          newNoteBody
+        );
+
+        // 3. Refresh the fields to see that count (n) increment!
+        const updatedFields = await api.getFields();
+        setFieldDefinitions(updatedFields);
+        clearSelection();
+      } else {
+        // Fallback: Populate the "New Note" control
+        setNewNoteField(field.name);
+      }
+    },
+    [activeSelection]
+  );
+
   return (
     <div style={styles.app}>
       <Header />
@@ -27,8 +70,21 @@ const App = () => {
       <main style={styles.main}>
         {isAuthenticated && (
           <>
-            <NoteCreator fieldDefinitions={fieldDefinitions} />
-            <Notes fieldDefinitions={fieldDefinitions} />
+            <div style={styles.fieldsHeader}>
+              <FieldCloud
+                fieldDefinitions={fieldDefinitions}
+                handlePillClick={handlePillClick}
+              />
+            </div>
+            <NoteCreator
+              fieldDefinitions={fieldDefinitions}
+              newNote={newNote}
+              setNewNote={setNewNote}
+            />
+            <Notes
+              fieldDefinitions={fieldDefinitions}
+              onSelectionChange={setActiveSelection}
+            />
           </>
         )}
         {!isAuthenticated && (

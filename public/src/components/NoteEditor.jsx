@@ -10,6 +10,7 @@ const NoteEditor = ({
   setNote,
   fieldDefinitions,
   afterAddingField,
+  onSelectionChange,
 }) => {
   const [selectedText, setSelectedText] = useState({});
 
@@ -70,24 +71,23 @@ const NoteEditor = ({
     const end = textarea.selectionEnd;
     const value = textarea.value.substring(start, end);
     if (value.length > 0) {
-      setSelectedText({
-        start,
-        end,
-        value,
-      });
+      const selectionData = {
+        noteId: note.id,
+        text: value,
+        fullText: note.text,
+        startIndex: start,
+        endIndex: end,
+      };
+      onSelectionChange(selectionData);
     } else {
-      setSelectedText({});
+      onSelectionChange({ noteId: null, text: "" });
     }
   };
 
   return (
     <>
       {selectedText.value && (
-        <div
-          // onFocus={() => setFieldControlsShown(true)}
-          // onBlur={() => setFieldControlsShown(false)}
-          tabIndex={-1}
-        >
+        <div tabIndex={-1}>
           <FieldControls
             note={note}
             selectedText={selectedText}

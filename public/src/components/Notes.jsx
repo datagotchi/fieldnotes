@@ -5,7 +5,7 @@ import Note from "./note";
 import useAPI from "../hooks/useAPI";
 import { useUserContext } from "../contexts/useUserContext";
 
-const Notes = ({ fieldDefinitions }) => {
+const Notes = ({ fieldDefinitions, onSelectionChange }) => {
   const [notes, setNotes] = useState();
 
   const { user, api } = useUserContext();
@@ -63,6 +63,7 @@ const Notes = ({ fieldDefinitions }) => {
               }}
               fieldDefinitions={fieldDefinitions}
               key={`note: ${note.id}`}
+              onSelectionChange={onSelectionChange}
             />
           ))}
     </ul>

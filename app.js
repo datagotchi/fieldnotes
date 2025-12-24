@@ -4,42 +4,65 @@ import cookieParser from "cookie-parser";
 import logger from "morgan";
 import { createServer } from "http";
 import path from "path";
-import { Pool } from "pg";
+import { createClient } from "@libsql/client";
 
 import usersRouter from "./routes/users.js";
 import notesRouter from "./routes/notes.js";
 import fieldsRouter from "./routes/fields.js";
 
-const pool = new Pool({
-  user: "postgres",
-  password: "p4ssw0rd", // TODO: the ident is configured as `trust`, so is this redundant?
-  database: "fieldnotes",
-  host: "localhost",
-  port: 5432,
-  // max: 50, // 10 is default
-  // idleTimeoutMillis: 10000, // 10000 is default
-  // connectionTimeoutMillis: 2000, // 0 (no timeout!) is default
+const client = createClient({
+  url: "file:fieldnotes.db",
 });
-pool.on("error", (err) => {
-  console.error("pg pool error: ", err);
-  process.exit();
-});
+
+const pool = {
+  query: async (textOrConfig, params) => {
+    let sql = "";
+    let args = [];
+
+    if (typeof textOrConfig === "string") {
+      sql = textOrConfig;
+      args = params || [];
+    } else {
+      // It's a Config Object: { text: "...", values: [...] }
+      sql = textOrConfig.text;
+      args = textOrConfig.values || [];
+    }
+
+    const convertedSql = sql
+      .replace(/\$\d+/g, "?") // $1 -> ?
+      .replace(/::\w+/g, "") // Strip ::text
+      .replace(/ILIKE/gi, "LIKE"); // ILIKE -> LIKE
+
+    try {
+      const result = await client.execute({
+        sql: convertedSql,
+        args: args || [],
+      });
+
+      return {
+        rows: result.rows,
+        rowCount: result.rows.length,
+      };
+    } catch (err) {
+      console.error("libSQL Error:", err.message);
+      console.error("Statement:", convertedSql);
+      throw err;
+    }
+  },
+};
 
 var app = express();
 
 app.get("/favicon.ico", (req, res) => res.sendStatus(204));
 
-app.use(async (req, res, next) => {
+app.use((req, res, next) => {
   try {
     req.pool = pool;
     next();
   } catch (err) {
-    console.error(err);
-    console.error("TotalCount", pool.totalCount);
-    console.error("IdleCount", pool.idleCount);
-    console.error("WaitingCount", pool.waitingCount);
-    console.error("So, restarting server...");
-    process.exit();
+    // This will almost never trigger in the new architecture
+    console.error("Critical libSQL Access Error:", err.message);
+    res.status(500).json({ error: "Database Access Error" });
   }
 });
 
@@ -67,7 +90,7 @@ app.use(function (err, req, res, next) {
   res.locals.error = req.app.get("env") === "development" ? err : {};
 
   res.status(err.status || 500);
-  res.send("error");
+  res.json({ error: err });
 });
 
 app.get("*", (req, res) => {

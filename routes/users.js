@@ -8,7 +8,9 @@ router.post("/register", async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!(email && password)) {
-    res.status(400).send("Invalid request: email and password are required.");
+    res
+      .status(400)
+      .json({ error: "Invalid request: email and password are required." });
   }
 
   const hashedPassword = await bcrypt.hash(password.trim(), 10);
@@ -43,8 +45,12 @@ router.post("/register", async (req, res, next) => {
 router.post("/login", async (req, res, next) => {
   const { email, password } = req.body;
 
+  console.log(`*** 'email': '${email}'`);
+
   if (!(email && password)) {
-    res.status(400).send("Invalid request: email and password are required.");
+    res
+      .status(400)
+      .json({ error: "Invalid request: email and password are required." });
   }
 
   const user = await req.pool
@@ -61,7 +67,7 @@ router.post("/login", async (req, res, next) => {
         .query({
           text: `insert into sessions (user_id, token) values (
             (select id from users where email = $1::text), $2::text) 
-            on conflict (user_id, token) do nothing
+            on conflict (user_id, token) do update set token = excluded.token
             returning *`,
           values: [email, token],
         })
@@ -74,9 +80,9 @@ router.post("/login", async (req, res, next) => {
         token: user.token,
       });
     }
-    return res.status(401).send("Invalid credentials.");
+    return res.status(401).json({ error: "Invalid credentials." });
   }
-  return res.status(404).send("Email adadress not found."); // TODO: combine this with other error(s) for more security
+  return res.status(404).json({ error: "Email adadress not found." }); // TODO: combine this with other error(s) for more security
 });
 
 router.delete("/logout/:email", authenticateUser, async (req, res, next) => {

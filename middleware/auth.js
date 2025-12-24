@@ -26,13 +26,13 @@ const authenticateUser = async (req, res, next) => {
         }
       } catch (error) {
         console.error(error);
-        res.status(500).send("Server error during authentication");
+        res.status(500).json({ error: "Server error during authentication" });
       }
     }
 
-    return res.status(401).send("Invalid token");
+    return res.status(401).json({ error: "Invalid token" });
   }
-  return res.status(401).send("No Authentication or email header");
+  return res.status(401).json({ error: "No Authentication or email header" });
 };
 
 export default authenticateUser;

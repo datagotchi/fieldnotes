@@ -17,10 +17,12 @@ const useAPI = (cookieUser) => {
   const _setCookieAndReturnUser = (user) => {
     // Set the cookie to expire in 7 days (7 days * 24 hours * 60 minutes * 60 seconds)
     const expirationTimeInSeconds = 7 * 24 * 60 * 60;
+
     // TODO: enable secure cookie when we switch to HTTPS
     // document.cookie = `token=${JSON.stringify(
     //   user
     // )}; path=/; max-age=${expirationTimeInSeconds}; SameSite=Lax; Secure`;
+
     document.cookie = `token=${JSON.stringify(
       user
     )}; path=/; max-age=${expirationTimeInSeconds}; SameSite=Lax`;
@@ -37,7 +39,14 @@ const useAPI = (cookieUser) => {
       body: JSON.stringify({ email, password }),
     })
       .then((response) => response.json())
-      .then(_setCookieAndReturnUser);
+      .then((data) => {
+        if (data.error) {
+          throw new Error(data.error);
+        }
+        return data;
+      })
+      .then(_setCookieAndReturnUser)
+      .catch((err) => alert(err));
 
   const login = (email, password) =>
     fetch("/users/login", {
@@ -49,6 +58,12 @@ const useAPI = (cookieUser) => {
       body: JSON.stringify({ email, password }),
     })
       .then((response) => response.json())
+      .then((data) => {
+        if (data.error) {
+          return alert(data.error);
+        }
+        return data;
+      })
       .then(_setCookieAndReturnUser);
 
   const logout = (email) =>

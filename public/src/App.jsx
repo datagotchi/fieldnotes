@@ -48,7 +48,6 @@ const App = () => {
                 const password = e.target.password.value;
                 const loggedInUser = await api.login(email, password);
                 if (loggedInUser) setUser(loggedInUser);
-                else alert("Invalid credentials");
               }}
             >
               <label>

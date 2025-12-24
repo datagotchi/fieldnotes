@@ -1,3 +1,7 @@
 node_modules
 .DS_Store
 dist
+fieldnotes.db
+fieldnotes.db-wal 
+fieldnotes.db-shm
+fieldnotes-*.sql

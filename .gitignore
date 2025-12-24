@@ -4,3 +4,4 @@ dist
 fieldnotes.db
 fieldnotes.db-wal 
 fieldnotes.db-shm
+fieldnotes-*.sql

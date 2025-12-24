@@ -14,6 +14,7 @@ const client = createClient({
   url: "file:fieldnotes.db",
 });
 
+// TODO: remove this and/or change the req.pool.query() calls throughout the routes
 const pool = {
   query: async (textOrConfig, params) => {
     let sql = "";
@@ -60,7 +61,6 @@ app.use((req, res, next) => {
     req.pool = pool;
     next();
   } catch (err) {
-    // This will almost never trigger in the new architecture
     console.error("Critical libSQL Access Error:", err.message);
     res.status(500).json({ error: "Database Access Error" });
   }
@@ -69,6 +69,7 @@ app.use((req, res, next) => {
 app.use(logger("dev"));
 app.use(json());
 app.use(urlencoded({ extended: false }));
+// TODO: rm cookieParser bc I send authentication headers
 app.use(cookieParser());
 
 const staticPath = path.join(process.cwd(), "public/dist");

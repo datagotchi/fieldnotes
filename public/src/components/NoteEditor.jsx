@@ -99,24 +99,6 @@ const NoteEditor = ({
 
   return (
     <>
-      {activeSelection.text && (
-        <div tabIndex={-1}>
-          <FieldControls
-            note={note}
-            selectedText={activeSelection.text}
-            setSelectedText={(text) =>
-              setActiveSelection({
-                ...activeSelection,
-                text,
-              })
-            }
-            fieldDefinitions={fieldDefinitions}
-            handleAddNewFieldToNote={handleAddNewFieldToNote}
-            handleAddExistingFieldToNote={handleAddExistingFieldToNote}
-            setFieldControlsShown={setFieldControlsShown}
-          />
-        </div>
-      )}
       {!activeSelection.text && (
         <p
           style={{

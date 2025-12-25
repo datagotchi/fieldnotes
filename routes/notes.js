@@ -57,7 +57,7 @@ router.patch("/:note_id", authenticateUser, async (req, res, next) => {
     if (validKeys.length === 0) {
       return res.sendStatus(400);
     }
-    let note = {};
+    let note = { id: Number(req.params.note_id) };
 
     // update the notes table with some keys
     const updateKeys = keys.filter((k) => k !== "field_values");

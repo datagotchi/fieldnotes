@@ -4,11 +4,13 @@ import { styles } from "../constants";
 import Note from "./note";
 import useAPI from "../hooks/useAPI";
 import { useUserContext } from "../contexts/useUserContext";
+import { useFieldTransferContext } from "../contexts/useFieldTransferContext";
 
 const Notes = ({ fieldDefinitions, onSelectionChange }) => {
   const [notes, setNotes] = useState();
 
   const { user, api } = useUserContext();
+  const { updatedNote } = useFieldTransferContext();
 
   useEffect(() => {
     if (user && fieldDefinitions && !notes) {
@@ -26,6 +28,15 @@ const Notes = ({ fieldDefinitions, onSelectionChange }) => {
       });
     }
   }, [user, fieldDefinitions, notes]);
+
+  useEffect(() => {
+    if (updatedNote && notes) {
+      const updatedList = notes.map((n) =>
+        n.id === updatedNote.id ? updatedNote : n
+      );
+      setNotes(updatedList);
+    }
+  }, [updatedNote]);
 
   return (
     <ul style={styles.list}>
@@ -47,25 +58,29 @@ const Notes = ({ fieldDefinitions, onSelectionChange }) => {
       {notes &&
         notes
           .sort((a, b) => new Date(b.datetime) - new Date(a.datetime))
-          .map((note) => (
-            <Note
-              user={user}
-              data={note}
-              setData={(updatedNote) => {
-                const updatedNotes = notes.map((n) =>
-                  n.id === updatedNote.id ? updatedNote : n
-                );
-                setNotes(updatedNotes);
-              }}
-              removeNote={async () => {
-                await api.deleteNote(note);
-                setNotes(notes.filter((n) => n.id !== note.id));
-              }}
-              fieldDefinitions={fieldDefinitions}
-              key={`note: ${note.id}`}
-              onSelectionChange={onSelectionChange}
-            />
-          ))}
+          .map((note) => {
+            const noteToRender =
+              updatedNote?.id === note.id ? updatedNote : note;
+            return (
+              <Note
+                user={user}
+                data={noteToRender}
+                setData={(updatedNote) => {
+                  const updatedNotes = notes.map((n) =>
+                    n.id === updatedNote.id ? updatedNote : n
+                  );
+                  setNotes(updatedNotes);
+                }}
+                removeNote={async () => {
+                  await api.deleteNote(noteToRender);
+                  setNotes(notes.filter((n) => n.id !== noteToRender.id));
+                }}
+                fieldDefinitions={fieldDefinitions}
+                key={`note: ${noteToRender.id}`}
+                onSelectionChange={onSelectionChange}
+              />
+            );
+          })}
     </ul>
   );
 };

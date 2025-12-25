@@ -7,20 +7,23 @@ import NoteCreator from "./components/NoteCreator";
 import Notes from "./components/Notes";
 import { useUserContext } from "./contexts/useUserContext";
 import FieldCloud from "./components/FieldCloud";
+import { useFieldTransferContext } from "./contexts/useFieldTransferContext";
 
 const App = () => {
   const [fieldDefinitions, setFieldDefinitions] = useState();
-  const [activeSelection, setActiveSelection] = useState({
-    noteId: null,
-    text: "",
-    originalText: "",
-  });
   const [newNote, setNewNote] = useState({ text: "", field_values: [] });
 
   const clearSelection = () =>
     setActiveSelection({ noteId: null, text: "", fullText: "" });
 
   const { user, loading, isAuthenticated, api, setUser } = useUserContext();
+  const {
+    setSelectedField,
+    activeSelection,
+    setActiveSelection,
+    updatedNote,
+    setUpdatedNote,
+  } = useFieldTransferContext();
 
   useEffect(() => {
     if (api.email && api.token && !fieldDefinitions) {
@@ -31,7 +34,9 @@ const App = () => {
   }, [api, api?.email, api?.token, fieldDefinitions]);
 
   const handlePillClick = useCallback(
-    async (field) => {
+    async (e) => {
+      const fieldName = e.currentTarget.childNodes[0].nodeValue;
+      const field = fieldDefinitions.find((fd) => fd.name === fieldName);
       if (activeSelection.noteId && activeSelection.text) {
         // 1. Calculate the new note text by removing the selection
         const textBefore = activeSelection.fullText.substring(
@@ -44,23 +49,23 @@ const App = () => {
         const newNoteBody = textBefore + textAfter;
 
         // 2. Perform the PATCH using your existing hook
-        await api.useField(
+        const updatedNote = await api.useField(
           activeSelection.noteId,
           field.id,
           activeSelection.text,
           newNoteBody
         );
+        setUpdatedNote(updatedNote);
 
         // 3. Refresh the fields to see that count (n) increment!
         const updatedFields = await api.getFields();
         setFieldDefinitions(updatedFields);
         clearSelection();
       } else {
-        // Fallback: Populate the "New Note" control
-        setNewNoteField(field.name);
+        setSelectedField(field);
       }
     },
-    [activeSelection]
+    [fieldDefinitions, activeSelection]
   );
 
   return (

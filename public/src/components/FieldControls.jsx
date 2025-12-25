@@ -10,7 +10,7 @@ const FieldControls = ({
   handleAddExistingFieldToNote,
   setFieldControlsShown,
 }) => {
-  const [selectedField, setSelectedField] = useFieldTransferContext();
+  const { selectedField, setSelectedField } = useFieldTransferContext();
 
   useEffect(() => {
     if (setFieldControlsShown) {

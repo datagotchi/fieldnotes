@@ -52,8 +52,7 @@ const Note = ({
               setNote={setData}
               fieldDefinitions={fieldDefinitions}
               afterAddingField={(updatedNote) => {
-                // FIXME: update state variables instead of reloading page
-                window.location.reload();
+                setData(updatedNote);
               }}
               onSelectionChange={onSelectionChange}
             />

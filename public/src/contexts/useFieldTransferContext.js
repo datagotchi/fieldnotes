@@ -5,7 +5,8 @@ const FieldTransferContext = createContext(undefined);
 
 export const FieldTransferProvider = ({ children }) => {
   const [fieldDefinitions, setFieldDefinitions] = useState([]);
-  const [selectedField, setSelectedField] = useState(null);
+  const [selectedField, setSelectedField] = useState();
+  const [updatedNote, setUpdatedNote] = useState();
 
   // The "Transfer Payload"
   const [activeSelection, setActiveSelection] = useState({
@@ -34,7 +35,8 @@ export const FieldTransferProvider = ({ children }) => {
       activeSelection,
       setActiveSelection,
       clearSelection,
-      isMining: !!activeSelection.text, // Visual flag for "Extraction Mode"
+      updatedNote,
+      setUpdatedNote,
     }),
     [fieldDefinitions, selectedField, activeSelection]
   );
@@ -48,10 +50,10 @@ export const FieldTransferProvider = ({ children }) => {
 
 export const useFieldTransferContext = () => {
   const context = useContext(FieldTransferContext);
-  if (context === undefined) {
+  return context ?? {};
+  /*
     throw new Error(
       "useFieldTransfer must be used within a FieldTransferProvider"
     );
-  }
-  return context;
+  */
 };

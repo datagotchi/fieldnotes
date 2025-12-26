@@ -48,50 +48,35 @@ router.patch("/:note_id", authenticateUser, async (req, res, next) => {
   if (Object.keys(req.body).length > 0) {
     const changes = req.body;
     const keys = Object.keys(changes || {});
+
     if (keys.length === 0) {
-      return res.sendStatus(400);
+      return res
+        .status(400)
+        .json({ message: "No keys in request body to update." });
     }
 
     // basic column name validation to avoid injection
     const validKeys = keys.filter((k) => /^[a-z][a-z0-9_]*$/i.test(k));
     if (validKeys.length === 0) {
-      return res.sendStatus(400);
+      return res
+        .status(400)
+        .json({ message: "No VALID keys in request body to update." });
     }
-    let note = { id: Number(req.params.note_id) };
 
-    // update the notes table with some keys
     const updateKeys = keys.filter((k) => k !== "field_values");
     const set = updateKeys.map((k, i) => `"${k}" = $${i + 1}`).join(", ");
     const values = updateKeys.map((k) => changes[k]);
-    if (set && values.length > 0) {
-      values.push(Number(req.params.note_id));
-      const updatedNote = await req.pool
-        .query({
-          text: `update notes set ${set} where id = $${values.length} returning *`,
-          values,
-        })
-        .then((result) => result.rows[0]);
-      note = updatedNote;
+    values.push(Number(req.params.note_id));
+    const updatedNote = await req.pool
+      .query({
+        text: `update notes set ${set} where id = $${values.length} returning *`,
+        values,
+      })
+      .then((result) => result.rows[0]);
+    if (!updatedNote) {
+      return res.status(404).json({ error: "Note not found" });
     }
-
-    if (changes.field_values && changes.field_values.length === 1) {
-      const newFieldValue = changes.field_values[0];
-      const newField = await req.pool
-        .query({
-          text: `insert into field_values (field_id, note_id, value) values ($1::integer, $2::integer, $3::text)
-          on conflict (field_id, note_id) do update set value = $3::text
-          returning *`,
-          values: [
-            newFieldValue.field_id,
-            req.params.note_id,
-            newFieldValue.field_value,
-          ],
-        })
-        .then((result) => result.rows[0]);
-      note.field_values = [newField];
-    }
-
-    return res.json(note);
+    return res.json(updatedNote);
   }
   return res.sendStatus(400);
 });

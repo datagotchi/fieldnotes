@@ -11,7 +11,7 @@ import { useFieldTransferContext } from "./contexts/useFieldTransferContext";
 
 const App = () => {
   const [fieldDefinitions, setFieldDefinitions] = useState();
-  // TODO: move to Typescript
+  // TODO: move to Typescript & ESLint
   const [newNote, setNewNote] = useState({ text: "", field_values: [] });
 
   const { setActiveSelection } = useFieldTransferContext();

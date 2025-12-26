@@ -5,7 +5,9 @@ import React, {
   useState,
   useMemo,
   useCallback,
+  useEffect,
 } from "react";
+import { useUserContext } from "./useUserContext";
 
 const FieldTransferContext = createContext(undefined);
 
@@ -23,6 +25,16 @@ export const FieldTransferProvider = ({ children }) => {
     startIndex: 0,
     endIndex: 0,
   });
+
+  const { api } = useUserContext();
+
+  useEffect(() => {
+    if (api?.token && fieldDefinitions.length === 0) {
+      api.getFields().then((fields) => {
+        setFieldDefinitions(fields);
+      });
+    }
+  }, [api?.token, fieldDefinitions]);
 
   const handlePillClick = useCallback(
     async (e) => {

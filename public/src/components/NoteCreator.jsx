@@ -4,6 +4,7 @@ import EasyEdit from "react-easy-edit";
 import { others, styles } from "./../constants";
 import FieldControls from "./FieldControls";
 import { useUserContext } from "../contexts/useUserContext";
+import { useFieldTransferContext } from "../contexts/useFieldTransferContext";
 
 const NoteCreator = ({ newNote, setNewNote }) => {
   const [selectedText, setSelectedText] = useState("");

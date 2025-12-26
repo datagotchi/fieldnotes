@@ -6,6 +6,7 @@ import useAPI from "../hooks/useAPI";
 import FieldControls from "./FieldControls";
 import NoteEditor from "./NoteEditor";
 import Field from "./Field";
+import { useFieldTransferContext } from "../contexts/useFieldTransferContext";
 
 const Note = ({ user, data, setData, removeNote, onSelectionChange }) => {
   const { fieldDefinitions } = useFieldTransferContext();

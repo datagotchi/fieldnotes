@@ -46,14 +46,17 @@ export const FieldTransferProvider = ({ children }) => {
   };
 
   const trimNoteFromSelection = useCallback(() => {
-    const textBefore = activeSelection.fullText.substring(
-      0,
-      activeSelection.startIndex
-    );
-    const textAfter = activeSelection.fullText.substring(
-      activeSelection.endIndex
-    );
-    return textBefore + textAfter;
+    if (activeSelection.text) {
+      const textBefore = activeSelection.fullText.substring(
+        0,
+        activeSelection.startIndex
+      );
+      const textAfter = activeSelection.fullText.substring(
+        activeSelection.endIndex
+      );
+      return textBefore + textAfter;
+    }
+    return newNote.text;
   }, [activeSelection]);
 
   const handlePillClick = useCallback(

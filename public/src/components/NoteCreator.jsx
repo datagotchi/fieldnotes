@@ -53,18 +53,18 @@ const NoteCreator = ({ onSelectionChange }) => {
           {activeSelection.text}
         </p>
       )}
-      {newNote.field_values.length > 0 &&
-        newNote.field_values.map((fv) => (
-          <table className="fieldTable" key="new note fieldTable">
-            <tbody>
+      <table className="fieldTable" key="new note fieldTable">
+        <tbody>
+          {newNote.field_values.length > 0 &&
+            newNote.field_values.map((fv) => (
               <Field
                 key={`new note field #${fv.id}`}
                 data={fv}
                 isStaged={true}
               />
-            </tbody>
-          </table>
-        ))}
+            ))}
+        </tbody>
+      </table>
       <button
         style={styles.button}
         onClick={async (e) => {

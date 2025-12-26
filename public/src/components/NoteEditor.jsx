@@ -31,7 +31,7 @@ const NoteEditor = ({ note, setNote, afterAddingField, onSelectionChange }) => {
     if (updatedNote && updatedNote.id === note.id) {
       // FIXME: update state variables instead of reloading page
       // window.location.reload();
-      setUpdatedNote(addedNote);
+      setUpdatedNote(updatedNote);
     }
   }, [updatedNote, note.id]);
 

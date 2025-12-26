@@ -1,9 +1,9 @@
-import { router } from "express";
-const router = router();
+import { Router } from "express";
+const router = Router();
 
 import authenticateuser from "../middleware/auth.js";
 
-router.post("/", authenticateuser, async (req, res) => {
+router.post("/", authenticateuser, async (req, res, next) => {
   try {
     const { note_id, field_id, value } = req.body;
     const result = await req.pool.query({
@@ -39,17 +39,21 @@ router.patch(
   }
 );
 
-router.delete("/:note_id/:field_id", authenticateuser, async (req, res) => {
-  try {
-    const { note_id, field_id } = req.params;
-    await req.pool.query({
-      text: "delete from field_values where note_id = $1 and field_id = $2",
-      values: [note_id, field_id],
-    });
-    res.sendstatus(204);
-  } catch (err) {
-    next(err);
+router.delete(
+  "/:note_id/:field_id",
+  authenticateuser,
+  async (req, res, next) => {
+    try {
+      const { note_id, field_id } = req.params;
+      await req.pool.query({
+        text: "delete from field_values where note_id = $1 and field_id = $2",
+        values: [note_id, field_id],
+      });
+      res.sendstatus(204);
+    } catch (err) {
+      next(err);
+    }
   }
-});
+);
 
 export default router;

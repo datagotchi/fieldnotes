@@ -151,23 +151,23 @@ const useAPI = (cookieUser) => {
 
   const useField = useCallback(
     (noteId, fieldId, value, newTextValue) => {
-      const body = {
-        field_values: [
-          { field_id: fieldId, note_id: noteId, field_value: value },
-        ],
+      const newField = {
+        field_id: fieldId,
+        note_id: noteId,
+        value,
       };
       if (newTextValue !== undefined) {
         body.text = newTextValue;
       }
-      return fetch(`/notes/${noteId}`, {
-        method: "PATCH",
+      return fetch(`/field_values`, {
+        method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: "application/json",
           "Content-Type": "application/json",
           "x-email": email,
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify(newField),
       }).then((response) => response.json());
     },
     [email, token]

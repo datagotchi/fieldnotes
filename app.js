@@ -9,6 +9,7 @@ import { createClient } from "@libsql/client";
 import usersRouter from "./routes/users.js";
 import notesRouter from "./routes/notes.js";
 import fieldsRouter from "./routes/fields.js";
+import fieldValuesRouter from "./routes/field_values.js";
 
 const client = createClient({
   url: "file:fieldnotes.db",
@@ -78,6 +79,7 @@ app.use(express.static(staticPath));
 app.use("/users", usersRouter);
 app.use("/notes", notesRouter);
 app.use("/fields", fieldsRouter);
+app.use("/field_values", fieldValuesRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

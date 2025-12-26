@@ -9,7 +9,8 @@ const Notes = ({ onSelectionChange }) => {
   const [notes, setNotes] = useState();
 
   const { user, api } = useUserContext();
-  const { fieldDefinitions, updatedNote } = useFieldTransferContext();
+  const { fieldDefinitions, updatedNote, setUpdatedNote } =
+    useFieldTransferContext();
 
   useEffect(() => {
     if (api.token && fieldDefinitions.length > 0 && !notes) {
@@ -30,12 +31,19 @@ const Notes = ({ onSelectionChange }) => {
 
   useEffect(() => {
     if (updatedNote && notes) {
-      const updatedList = notes.map((n) =>
-        n.id === updatedNote.id ? updatedNote : n
-      );
-      setNotes(updatedList);
+      const exists = notes.find((n) => n.id === updatedNote.id);
+      const updatedNoteCopy = { ...updatedNote };
+      setUpdatedNote(undefined);
+
+      if (exists) {
+        setNotes(
+          notes.map((n) => (n.id === updatedNoteCopy.id ? updatedNoteCopy : n))
+        );
+      } else {
+        setNotes([updatedNoteCopy, ...notes]);
+      }
     }
-  }, [updatedNote]);
+  }, [updatedNote, notes]);
 
   return (
     <ul style={styles.list}>

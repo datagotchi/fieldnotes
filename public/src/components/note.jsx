@@ -1,17 +1,16 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback } from "react";
 import EasyEdit from "react-easy-edit";
 
 import { styles } from "../constants";
-import useAPI from "../hooks/useAPI";
-import FieldControls from "./FieldControls";
 import NoteEditor from "./NoteEditor";
 import Field from "./Field";
 import { useFieldTransferContext } from "../contexts/useFieldTransferContext";
+import { useUserContext } from "../contexts/useUserContext";
 
 const Note = ({ user, data, setData, removeNote, onSelectionChange }) => {
   const { fieldDefinitions } = useFieldTransferContext();
 
-  const api = useAPI(user);
+  const { api } = useUserContext();
 
   const getFieldLabel = useCallback(
     (fieldId) => {
@@ -56,7 +55,7 @@ const Note = ({ user, data, setData, removeNote, onSelectionChange }) => {
         />
       </div>
 
-      <table className="fieldTable">
+      <table className="fieldTable" key={`note #${data.id} fieldTable`}>
         <tbody>
           {data.field_values &&
             data.field_values

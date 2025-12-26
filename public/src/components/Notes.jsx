@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 
 import { styles } from "../constants";
 import Note from "./note";
-import useAPI from "../hooks/useAPI";
 import { useUserContext } from "../contexts/useUserContext";
 import { useFieldTransferContext } from "../contexts/useFieldTransferContext";
 

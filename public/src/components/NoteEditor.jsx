@@ -3,16 +3,16 @@ import React, { useCallback, useEffect, useState } from "react";
 import FieldControls from "./FieldControls";
 import useAPI from "../hooks/useAPI";
 import Field from "./Field";
+import { useFieldTransferContext } from "../contexts/useFieldTransferContext";
 
 const NoteEditor = ({
   user,
   note,
   setNote,
-  fieldDefinitions,
   afterAddingField,
+  onSelectionChange,
+  setParentValue,
 }) => {
-  const [selectedText, setSelectedText] = useState({});
-
   const api = useAPI(user);
 
   const handleChange = (e) => {
@@ -21,16 +21,25 @@ const NoteEditor = ({
 
   const [fieldControlsShown, setFieldControlsShown] = useState(false);
 
+  const { activeSelection, setActiveSelection, updatedNote, setUpdatedNote } =
+    useFieldTransferContext();
+
   const handleBlur = () => {
     if (!fieldControlsShown) {
-      setSelectedText({});
+      setActiveSelection({});
     }
   };
 
   const doUseFieldAndUpdate = useCallback(
     async (field, value) => {
-      const startIndex = Math.min(selectedText.start, selectedText.end);
-      const endIndex = Math.max(selectedText.start, selectedText.end);
+      const startIndex = Math.min(
+        activeSelection.startIndex,
+        activeSelection.endIndex
+      );
+      const endIndex = Math.max(
+        activeSelection.startIndex,
+        activeSelection.endIndex
+      );
       const textBefore = note.text.substring(0, startIndex);
       const textAfter = note.text.substring(endIndex);
       const newTextValue = textBefore + textAfter;
@@ -40,14 +49,18 @@ const NoteEditor = ({
         value,
         newTextValue
       );
-      const newFieldValue = updatedNote.field_values[0];
-      return afterAddingField({
-        text: updatedNote.text,
-        field_values: [...note.field_values, newFieldValue],
-      });
+      return afterAddingField(updatedNote);
     },
-    [note.id, selectedText]
+    [note.id, activeSelection]
   );
+
+  useEffect(() => {
+    // If the context has a fresh note and it's ME...
+    if (updatedNote && updatedNote.id === note.id) {
+      // TODO: tell the library to close the editor without doing a window reload
+      window.location.reload();
+    }
+  }, [updatedNote, note.id]);
 
   const handleAddNewFieldToNote = useCallback(
     async (field, value) => {
@@ -70,36 +83,23 @@ const NoteEditor = ({
     const end = textarea.selectionEnd;
     const value = textarea.value.substring(start, end);
     if (value.length > 0) {
-      setSelectedText({
-        start,
-        end,
-        value,
-      });
+      // TODO: move to Typescript
+      const selectionData = {
+        noteId: note.id,
+        text: value,
+        fullText: note.text,
+        startIndex: start,
+        endIndex: end,
+      };
+      onSelectionChange(selectionData);
     } else {
-      setSelectedText({});
+      onSelectionChange({ noteId: null, text: "" });
     }
   };
 
   return (
     <>
-      {selectedText.value && (
-        <div
-          // onFocus={() => setFieldControlsShown(true)}
-          // onBlur={() => setFieldControlsShown(false)}
-          tabIndex={-1}
-        >
-          <FieldControls
-            note={note}
-            selectedText={selectedText}
-            setSelectedText={setSelectedText}
-            fieldDefinitions={fieldDefinitions}
-            handleAddNewFieldToNote={handleAddNewFieldToNote}
-            handleAddExistingFieldToNote={handleAddExistingFieldToNote}
-            setFieldControlsShown={setFieldControlsShown}
-          />
-        </div>
-      )}
-      {!selectedText.value && (
+      {!activeSelection.text && (
         <p
           style={{
             fontSize: "smaller",
@@ -118,10 +118,10 @@ const NoteEditor = ({
         onBlur={handleBlur}
         onSelect={handleSelect}
       />
-      {selectedText.value && (
+      {activeSelection.text && (
         <p>
           <strong>Selected text: </strong>
-          {selectedText.value}
+          {activeSelection.text}
         </p>
       )}
     </>

@@ -1,16 +1,15 @@
 import React, { useCallback, useEffect, useState } from "react";
 import EasyEdit from "react-easy-edit";
 
-import { styles } from "./../constants";
-import useAPI from "../hooks/useAPI";
+import { others, styles } from "./../constants";
 import FieldControls from "./FieldControls";
 import { useUserContext } from "../contexts/useUserContext";
 
-const NoteCreator = ({ fieldDefinitions }) => {
-  const [newNote, setNewNote] = useState({ text: "", field_values: [] });
+const NoteCreator = ({ newNote, setNewNote }) => {
   const [selectedText, setSelectedText] = useState("");
 
   const { user, api } = useUserContext();
+  const { fieldDefinitions } = useFieldTransferContext();
 
   useEffect(() => {
     if (
@@ -107,8 +106,8 @@ const NoteCreator = ({ fieldDefinitions }) => {
         placeholder="Write a quick note..."
         style={styles.input}
         aria-label="New note"
-        rows="10"
-        cols="100"
+        rows={others.noteCreator.rows}
+        cols={others.noteCreator.cols}
       />
       {newNote.field_values.length > 0 &&
         newNote.field_values.map((fv) => (

@@ -7,7 +7,9 @@ import FieldControls from "./FieldControls";
 import NoteEditor from "./NoteEditor";
 import Field from "./Field";
 
-const Note = ({ user, data, setData, removeNote, fieldDefinitions }) => {
+const Note = ({ user, data, setData, removeNote, onSelectionChange }) => {
+  const { fieldDefinitions } = useFieldTransferContext();
+
   const api = useAPI(user);
 
   const getFieldLabel = useCallback(
@@ -45,24 +47,9 @@ const Note = ({ user, data, setData, removeNote, fieldDefinitions }) => {
               setNote={setData}
               fieldDefinitions={fieldDefinitions}
               afterAddingField={(updatedNote) => {
-                // const newFieldValueAndDef = updatedNote.field_values[0];
-                // if (
-                //   newFieldValueAndDef &&
-                //   !fieldDefinitions.find(
-                //     (fd) => fd.id === newFieldValueAndDef.id
-                //   )
-                // ) {
-                //   fieldDefinitions = [...fieldDefinitions, newFieldValueAndDef];
-                // }
-                // const updatedText = updatedNote.text;
-                // setData({
-                //   ...data,
-                //   text: updatedText,
-                //   field_values: [...data.field_values, newFieldValueAndDef],
-                // });
-                // TODO: update state variables instead of reloading page
-                window.location.reload();
+                setData(updatedNote);
               }}
+              onSelectionChange={onSelectionChange}
             />
           }
         />

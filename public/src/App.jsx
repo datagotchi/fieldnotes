@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import Header from "./components/header";
 import { styles } from "./constants";
@@ -6,11 +6,17 @@ import useAPI from "./hooks/useAPI";
 import NoteCreator from "./components/NoteCreator";
 import Notes from "./components/Notes";
 import { useUserContext } from "./contexts/useUserContext";
+import FieldCloud from "./components/FieldCloud";
+import { useFieldTransferContext } from "./contexts/useFieldTransferContext";
 
 const App = () => {
   const [fieldDefinitions, setFieldDefinitions] = useState();
+  // TODO: move to Typescript
+  const [newNote, setNewNote] = useState({ text: "", field_values: [] });
 
-  const { user, loading, isAuthenticated, api, setUser } = useUserContext();
+  const { setActiveSelection } = useFieldTransferContext();
+
+  const { isAuthenticated, api, setUser } = useUserContext();
 
   useEffect(() => {
     if (api.email && api.token && !fieldDefinitions) {
@@ -27,8 +33,11 @@ const App = () => {
       <main style={styles.main}>
         {isAuthenticated && (
           <>
-            <NoteCreator fieldDefinitions={fieldDefinitions} />
-            <Notes fieldDefinitions={fieldDefinitions} />
+            <div style={styles.fieldsHeader}>
+              <FieldCloud />
+            </div>
+            <NoteCreator newNote={newNote} setNewNote={setNewNote} />
+            <Notes onSelectionChange={setActiveSelection} />
           </>
         )}
         {!isAuthenticated && (

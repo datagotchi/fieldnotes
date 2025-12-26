@@ -8,6 +8,16 @@ export const styles = {
     color: "#111",
   },
   header: { marginBottom: 16 },
+  fieldsHeader: {
+    position: "sticky",
+    top: "0px", // Or the height of your Header
+    zIndex: 10,
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    backdropFilter: "blur(5px)", // Modern "Glassmorphism" feel
+    borderBottom: "1px solid #eaeaea",
+    padding: "10px 0",
+    marginBottom: "20px",
+  },
   subtitle: { marginTop: 6, color: "#666" },
   main: {
     background: "#fff",
@@ -51,4 +61,11 @@ export const styles = {
     fontSize: 16,
   },
   footer: { marginTop: 12, textAlign: "center", color: "#888" },
+};
+
+export const others = {
+  noteCreator: {
+    rows: 10,
+    cols: 67,
+  },
 };

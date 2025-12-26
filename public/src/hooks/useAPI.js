@@ -156,7 +156,7 @@ const useAPI = (cookieUser) => {
           { field_id: fieldId, note_id: noteId, field_value: value },
         ],
       };
-      if (newTextValue) {
+      if (newTextValue !== undefined) {
         body.text = newTextValue;
       }
       return fetch(`/notes/${noteId}`, {

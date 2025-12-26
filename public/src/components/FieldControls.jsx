@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
+import { useFieldTransferContext } from "../contexts/useFieldTransferContext";
 
 const FieldControls = ({
   note,
@@ -9,8 +10,7 @@ const FieldControls = ({
   handleAddExistingFieldToNote,
   setFieldControlsShown,
 }) => {
-  const [newFieldName, setNewFieldName] = useState("");
-  const [selectedField, setSelectedField] = useState();
+  const { selectedField, setSelectedField } = useFieldTransferContext();
 
   useEffect(() => {
     if (setFieldControlsShown) {

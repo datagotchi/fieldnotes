@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 
 import App from "./App";
 import { UserProvider } from "./contexts/useUserContext";
+import { FieldTransferProvider } from "./contexts/useFieldTransferContext";
 
 const container = document.getElementById("root");
 if (!container) {
@@ -13,6 +14,8 @@ if (!container) {
 
 createRoot(container).render(
   <UserProvider>
-    <App />
+    <FieldTransferProvider>
+      <App />
+    </FieldTransferProvider>
   </UserProvider>
 );

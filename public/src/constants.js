@@ -62,3 +62,10 @@ export const styles = {
   },
   footer: { marginTop: 12, textAlign: "center", color: "#888" },
 };
+
+export const others = {
+  noteCreator: {
+    rows: 10,
+    cols: 67,
+  },
+};

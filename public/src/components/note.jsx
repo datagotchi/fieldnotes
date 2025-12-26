@@ -7,14 +7,9 @@ import FieldControls from "./FieldControls";
 import NoteEditor from "./NoteEditor";
 import Field from "./Field";
 
-const Note = ({
-  user,
-  data,
-  setData,
-  removeNote,
-  fieldDefinitions,
-  onSelectionChange,
-}) => {
+const Note = ({ user, data, setData, removeNote, onSelectionChange }) => {
+  const { fieldDefinitions } = useFieldTransferContext();
+
   const api = useAPI(user);
 
   const getFieldLabel = useCallback(

@@ -11,19 +11,12 @@ import { useFieldTransferContext } from "./contexts/useFieldTransferContext";
 
 const App = () => {
   const [fieldDefinitions, setFieldDefinitions] = useState();
+  // TODO: move to Typescript
   const [newNote, setNewNote] = useState({ text: "", field_values: [] });
 
-  const clearSelection = () =>
-    setActiveSelection({ noteId: null, text: "", fullText: "" });
+  const { setActiveSelection } = useFieldTransferContext();
 
-  const { user, loading, isAuthenticated, api, setUser } = useUserContext();
-  const {
-    setSelectedField,
-    activeSelection,
-    setActiveSelection,
-    updatedNote,
-    setUpdatedNote,
-  } = useFieldTransferContext();
+  const { isAuthenticated, api, setUser } = useUserContext();
 
   useEffect(() => {
     if (api.email && api.token && !fieldDefinitions) {
@@ -33,41 +26,6 @@ const App = () => {
     }
   }, [api, api?.email, api?.token, fieldDefinitions]);
 
-  const handlePillClick = useCallback(
-    async (e) => {
-      const fieldName = e.currentTarget.childNodes[0].nodeValue;
-      const field = fieldDefinitions.find((fd) => fd.name === fieldName);
-      if (activeSelection.noteId && activeSelection.text) {
-        // 1. Calculate the new note text by removing the selection
-        const textBefore = activeSelection.fullText.substring(
-          0,
-          activeSelection.startIndex
-        );
-        const textAfter = activeSelection.fullText.substring(
-          activeSelection.endIndex
-        );
-        const newNoteBody = textBefore + textAfter;
-
-        // 2. Perform the PATCH using your existing hook
-        const updatedNote = await api.useField(
-          activeSelection.noteId,
-          field.id,
-          activeSelection.text,
-          newNoteBody
-        );
-        setUpdatedNote(updatedNote);
-
-        // 3. Refresh the fields to see that count (n) increment!
-        const updatedFields = await api.getFields();
-        setFieldDefinitions(updatedFields);
-        clearSelection();
-      } else {
-        setSelectedField(field);
-      }
-    },
-    [fieldDefinitions, activeSelection]
-  );
-
   return (
     <div style={styles.app}>
       <Header />
@@ -76,20 +34,10 @@ const App = () => {
         {isAuthenticated && (
           <>
             <div style={styles.fieldsHeader}>
-              <FieldCloud
-                fieldDefinitions={fieldDefinitions}
-                handlePillClick={handlePillClick}
-              />
+              <FieldCloud />
             </div>
-            <NoteCreator
-              fieldDefinitions={fieldDefinitions}
-              newNote={newNote}
-              setNewNote={setNewNote}
-            />
-            <Notes
-              fieldDefinitions={fieldDefinitions}
-              onSelectionChange={setActiveSelection}
-            />
+            <NoteCreator newNote={newNote} setNewNote={setNewNote} />
+            <Notes onSelectionChange={setActiveSelection} />
           </>
         )}
         {!isAuthenticated && (

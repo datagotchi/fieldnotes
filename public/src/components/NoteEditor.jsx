@@ -9,7 +9,6 @@ const NoteEditor = ({
   user,
   note,
   setNote,
-  fieldDefinitions,
   afterAddingField,
   onSelectionChange,
   setParentValue,
@@ -58,10 +57,10 @@ const NoteEditor = ({
   useEffect(() => {
     // If the context has a fresh note and it's ME...
     if (updatedNote && updatedNote.id === note.id) {
-      // FIXME: tell the library to close the editor without doing a window reload
+      // TODO: tell the library to close the editor without doing a window reload
       window.location.reload();
     }
-  }, [updatedNote, note.id, setUpdatedNote, setParentValue]);
+  }, [updatedNote, note.id]);
 
   const handleAddNewFieldToNote = useCallback(
     async (field, value) => {
@@ -84,6 +83,7 @@ const NoteEditor = ({
     const end = textarea.selectionEnd;
     const value = textarea.value.substring(start, end);
     if (value.length > 0) {
+      // TODO: move to Typescript
       const selectionData = {
         noteId: note.id,
         text: value,

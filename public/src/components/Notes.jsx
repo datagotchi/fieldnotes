@@ -6,11 +6,11 @@ import useAPI from "../hooks/useAPI";
 import { useUserContext } from "../contexts/useUserContext";
 import { useFieldTransferContext } from "../contexts/useFieldTransferContext";
 
-const Notes = ({ fieldDefinitions, onSelectionChange }) => {
+const Notes = ({ onSelectionChange }) => {
   const [notes, setNotes] = useState();
 
   const { user, api } = useUserContext();
-  const { updatedNote } = useFieldTransferContext();
+  const { fieldDefinitions, updatedNote } = useFieldTransferContext();
 
   useEffect(() => {
     if (user && fieldDefinitions && !notes) {

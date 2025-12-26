@@ -1,7 +1,8 @@
 import React from "react";
+import { useFieldTransferContext } from "../contexts/useFieldTransferContext";
 
-const FieldCloud = ({ fieldDefinitions, handlePillClick }) => {
-  if (!fieldDefinitions || fieldDefinitions.length === 0) return null;
+const FieldCloud = () => {
+  const { fieldDefinitions, handlePillClick } = useFieldTransferContext();
 
   return (
     <div

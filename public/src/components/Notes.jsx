@@ -13,7 +13,7 @@ const Notes = ({ onSelectionChange }) => {
     useFieldTransferContext();
 
   useEffect(() => {
-    if (api.token && fieldDefinitions.length > 0 && !notes) {
+    if (api.token && fieldDefinitions && !notes) {
       api.getNotes().then((notes) => {
         const processedNotes = notes.map((n) => {
           n.field_values.forEach((fv) => {

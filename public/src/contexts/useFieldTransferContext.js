@@ -13,7 +13,7 @@ const FieldTransferContext = createContext(undefined);
 
 // TODO: If this context grows too big, split into FieldDefinitionContext and ActiveSelectionContext to prevent unnecessary re-renders.
 export const FieldTransferProvider = ({ children }) => {
-  const [fieldDefinitions, setFieldDefinitions] = useState([]);
+  const [fieldDefinitions, setFieldDefinitions] = useState();
   const [selectedField, setSelectedField] = useState();
   const [updatedNote, setUpdatedNote] = useState();
   // TODO: move to Typescript & ESLint to handle state variable object attributes
@@ -32,7 +32,7 @@ export const FieldTransferProvider = ({ children }) => {
   const { api } = useUserContext();
 
   useEffect(() => {
-    if (api?.token && fieldDefinitions.length === 0) {
+    if (api?.token && !fieldDefinitions) {
       api.getFields().then((fields) => {
         setFieldDefinitions(fields);
       });

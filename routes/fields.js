@@ -5,6 +5,7 @@ import authenticateUser from "../middleware/auth.js";
 
 router.get("/", authenticateUser, async (req, res, next) => {
   try {
+    const user_id = req.user.id;
     const fields = await req.pool
       .query(
         `select 
@@ -12,9 +13,11 @@ router.get("/", authenticateUser, async (req, res, next) => {
         f.name, 
         count(fv.id) as use_count
       from fields f
+      where user_id = $1
       left join field_values fv on f.id = fv.field_id
       group by f.id, f.name
-      order by use_count desc, f.name asc`
+      order by use_count desc, f.name asc`,
+        [user_id]
       )
       .then((result) => result.rows);
     return res.json(fields);
@@ -27,17 +30,41 @@ router.post("/", authenticateUser, async (req, res, next) => {
   try {
     const { name } = req.body;
     if (name) {
+      const user_id = req.user.id;
       const newField = await req.pool
         .query({
-          text: "insert into fields (name) values ($1::text) returning *",
-          values: [name],
+          text: "insert into fields (name, user_id) values ($1, $2) returning *",
+          values: [name, user_id],
         })
         .then((result) => result.rows[0]);
 
       return res.json(newField);
     } else {
-      return res.sendStatus(400);
+      return res.status(400).json({ error: "Name is required" });
     }
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.delete("/:id", authenticateUser, async (req, res, next) => {
+  try {
+    const fieldId = req.params.id;
+    const user_id = req.user.id;
+
+    // First, delete associated field_values
+    await req.pool.query({
+      text: "delete from field_values where field_id = $1",
+      values: [fieldId],
+    });
+
+    // Then, delete the field itself
+    await req.pool.query({
+      text: "delete from fields where id = $1 and user_id = $2",
+      values: [fieldId, user_id],
+    });
+
+    return res.status(204).end();
   } catch (err) {
     next(err);
   }

@@ -56,7 +56,6 @@ export const FieldTransferProvider = ({ children }) => {
       );
       return textBefore + textAfter;
     }
-    return newNote.text;
   }, [activeSelection]);
 
   const handlePillClick = useCallback(
@@ -68,27 +67,44 @@ export const FieldTransferProvider = ({ children }) => {
           try {
             const newNoteBody = trimNoteFromSelection();
 
-            // Perform the PATCH API call using useField
-            const updatedNote = await api.useField(
+            const apiResponseNote = await api.useField(
               activeSelection.noteId,
               field.id,
               activeSelection.text,
               newNoteBody
             );
-            setUpdatedNote(updatedNote);
+            if (
+              apiResponseNote &&
+              Array.isArray(apiResponseNote.field_values)
+            ) {
+              apiResponseNote.field_values = apiResponseNote.field_values.map(
+                (fv) => {
+                  const fieldDef = fieldDefinitions.find(
+                    (fd) => fd.id === fv.field_id
+                  );
+                  return {
+                    ...fv,
+                    name: fieldDef ? fieldDef.name : fv.name,
+                  };
+                }
+              );
+            }
+            setUpdatedNote({
+              ...apiResponseNote,
+              datetime: new Date().toISOString(),
+            });
 
-            // Refresh the fields to see the count (n) increment
-            setFieldDefinitions([
+            setFieldDefinitions(
               fieldDefinitions.map((fd) =>
                 fd.id === field.id ? { ...fd, use_count: fd.use_count + 1 } : fd
-              ),
-            ]);
+              )
+            );
           } catch (err) {
             if (err.message?.includes("UNIQUE constraint failed")) {
               return alertCantUseExistingField(field.name);
             }
           }
-        } else if (!activeSelection.noteId) {
+        } else if (activeSelection.text && !activeSelection.noteId) {
           // Stage the field for the NoteCreator
           const isDuplicate = newNote.field_values.some(
             (fv) => fv.field_id === field.id || fv.name === field.name
@@ -128,9 +144,11 @@ export const FieldTransferProvider = ({ children }) => {
     if (value.length > 0) {
       // TODO: move to Typescript
       const selectionData = {
-        // noteId: newNote.id,
+        noteId: textarea.dataset.noteId
+          ? JSON.parse(textarea.dataset.noteId)
+          : null,
         text: value,
-        fullText: newNote.text,
+        fullText: textarea.value,
         startIndex: start,
         endIndex: end,
       };

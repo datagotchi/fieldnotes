@@ -150,26 +150,63 @@ const useAPI = (cookieUser) => {
   );
 
   const useField = useCallback(
-    (noteId, fieldId, value, newTextValue) => {
+    async (noteId, fieldId, value, newTextValue) => {
       const newField = {
         field_id: fieldId,
         note_id: noteId,
         value,
       };
+      const promises = [];
+      promises.push(
+        fetch(`/field_values`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "x-email": email,
+          },
+          body: JSON.stringify(newField),
+        }).then((response) => response.json())
+      );
+
       if (newTextValue !== undefined) {
-        body.text = newTextValue;
+        promises.push(
+          fetch(`/notes/${noteId}`, {
+            method: "PATCH",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              "x-email": email,
+            },
+            body: JSON.stringify({ text: newTextValue }),
+          }).then((response) => response.json())
+        );
       }
-      return fetch(`/field_values`, {
-        method: "POST",
+      return Promise.all(promises).then((results) => {
+        return {
+          id: noteId,
+          field_values: [results[0]],
+          text: results[1].text,
+        };
+      });
+    },
+    [email, token]
+  );
+
+  const updateFieldValue = useCallback(
+    (noteId, fieldId, value) =>
+      fetch(`/field_values/${noteId}/${fieldId}`, {
+        method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: "application/json",
           "Content-Type": "application/json",
           "x-email": email,
         },
-        body: JSON.stringify(newField),
-      }).then((response) => response.json());
-    },
+        body: JSON.stringify({ value }),
+      }).then((response) => response.json()),
     [email, token]
   );
 
@@ -186,6 +223,7 @@ const useAPI = (cookieUser) => {
     getFields,
     addField,
     useField,
+    updateFieldValue,
   };
 };
 

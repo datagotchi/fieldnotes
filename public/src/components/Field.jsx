@@ -20,17 +20,12 @@ const Field = ({ data, isStaged = false }) => {
           ),
         });
       } else if (api?.token) {
-        // Persist changes to the database for existing notes
-        const changes = await api.updateNote({
-          id: data.note_id,
-          field_values: [
-            {
-              field_id: data.field_id,
-              field_value: newValue,
-            },
-          ],
-        });
-        data.value = changes.field_value;
+        const updatedField = await api.updateFieldValue(
+          data.note_id,
+          data.field_id,
+          newValue
+        );
+        data.value = updatedField.value;
       }
     },
     [isStaged, api?.token]

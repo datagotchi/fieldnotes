@@ -32,7 +32,8 @@ router.patch(
              returning *`,
         values: [note_id, field_id, value],
       });
-      res.json(result.rows[0]);
+      // FIXME: it's not returning anything
+      return res.json(result.rows[0]);
     } catch (err) {
       next(err);
     }

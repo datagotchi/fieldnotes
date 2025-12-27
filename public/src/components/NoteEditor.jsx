@@ -10,8 +10,6 @@ const NoteEditor = ({ note, setNote, afterAddingField, onSelectionChange }) => {
     setNote({ ...note, text: e.target.value });
   };
 
-  const [fieldControlsShown, setFieldControlsShown] = useState(false);
-
   const {
     activeSelection,
     setActiveSelection,
@@ -20,18 +18,11 @@ const NoteEditor = ({ note, setNote, afterAddingField, onSelectionChange }) => {
     handleTextareaSelection,
   } = useFieldTransferContext();
 
-  const handleBlur = () => {
-    if (!fieldControlsShown) {
-      setActiveSelection({});
-    }
-  };
-
   useEffect(() => {
-    // If the context has a fresh note and it's ME...
     if (updatedNote && updatedNote.id === note.id) {
       // FIXME: update state variables instead of reloading page
-      // window.location.reload();
-      setUpdatedNote(updatedNote);
+      window.location.reload();
+      // setUpdatedNote(updatedNote);
     }
   }, [updatedNote, note.id]);
 
@@ -53,10 +44,10 @@ const NoteEditor = ({ note, setNote, afterAddingField, onSelectionChange }) => {
         cols="100"
         value={note.text}
         onChange={handleChange}
-        onBlur={handleBlur}
+        data-note-id={note.id}
         onSelect={handleTextareaSelection}
       />
-      {activeSelection.text && (
+      {activeSelection.text && activeSelection.noteId && (
         <p>
           <strong>Selected text: </strong>
           {activeSelection.text}

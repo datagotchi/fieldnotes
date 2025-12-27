@@ -47,7 +47,7 @@ const NoteCreator = ({ onSelectionChange }) => {
         cols={others.noteCreator.cols}
         onSelect={handleTextareaSelection}
       />
-      {activeSelection.text && (
+      {activeSelection.text && !activeSelection.noteId && (
         <p>
           <strong>Selected text: </strong>
           {activeSelection.text}

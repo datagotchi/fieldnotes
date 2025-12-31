@@ -6,14 +6,14 @@ import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended"
 import reactPlugin from "eslint-plugin-react";
 import reactHooksPlugin from "eslint-plugin-react-hooks";
 
-import tseslint from "typescript-eslint";
-import typescriptParser from "@typescript-eslint/parser";
+// import tseslint from "typescript-eslint";
+// import typescriptParser from "@typescript-eslint/parser";
 
 import jestPlugin from "eslint-plugin-jest";
 
-import nextPlugin from "@next/eslint-plugin-next";
+// import nextPlugin from "@next/eslint-plugin-next";
 
-import playwrightPlugin from "eslint-plugin-playwright";
+// import playwrightPlugin from "eslint-plugin-playwright";
 
 export default [
   // global recommended configs
@@ -28,9 +28,9 @@ export default [
       },
     },
   },
-  // global files: all typescript files
+  // global files: all js files
   {
-    files: ["**/*.{ts,tsx}"],
+    files: ["**/*.{js,jsx}"],
   },
   // global ignores
   {
@@ -48,14 +48,15 @@ export default [
   {
     plugins: {
       js: jsPlugin,
-      "@typescript-eslint": tseslint.plugin,
+      // "@typescript-eslint": tseslint.plugin,
+      "react-hooks": reactHooksPlugin,
     },
   },
   // global language options
   {
     languageOptions: {
       globals: { ...globals.browser, ...globals.node },
-      parser: typescriptParser,
+      // parser: typescriptParser,
       parserOptions: {
         project: "./tsconfig.json",
         ecmaFeatures: {
@@ -68,13 +69,13 @@ export default [
   {
     rules: {
       ...jsPlugin.configs.recommended.rules,
-      ...tseslint.configs.recommended.rules,
+      // ...tseslint.configs.recommended.rules,
 
       "no-unused-vars": "off",
       "no-undef": "error",
 
-      "@typescript-eslint/no-unused-vars": "warn",
-      "@typescript-eslint/no-explicit-any": "warn",
+      // "@typescript-eslint/no-unused-vars": "warn",
+      // "@typescript-eslint/no-explicit-any": "warn",
     },
   },
   // playwright e2e test config
@@ -96,7 +97,7 @@ export default [
   {
     ...reactPlugin.configs.flat.recommended,
     ...jestPlugin.configs["flat/recommended"],
-    files: ["**/*.test.{ts,tsx}"],
+    files: ["**/*.test.{js,jsx}"],
     plugins: {
       react: reactPlugin,
       jest: jestPlugin,
@@ -109,7 +110,7 @@ export default [
       "react/prop-types": "error",
       "react/display-name": "off",
 
-      "@typescript-eslint/no-explicit-any": "off",
+      // "@typescript-eslint/no-explicit-any": "off",
     },
     languageOptions: {
       globals: { ...globals.jest },

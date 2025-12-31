@@ -30,7 +30,7 @@ const useAPI = (cookieUser) => {
   };
 
   const register = (email, password) =>
-    fetch("/users/register", {
+    fetch("/api/users/register", {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -49,7 +49,7 @@ const useAPI = (cookieUser) => {
       .catch((err) => alert(err));
 
   const login = (email, password) =>
-    fetch("/users/login", {
+    fetch("/api/users/login", {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -67,14 +67,14 @@ const useAPI = (cookieUser) => {
       .then(_setCookieAndReturnUser);
 
   const logout = (email) =>
-    fetch(`/users/logout/${encodeURIComponent(email)}`, {
+    fetch(`/api/users/logout/${encodeURIComponent(email)}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}`, "x-email": email },
     });
 
   const getNotes = useCallback(
     () =>
-      fetch("/notes", {
+      fetch("/api/notes", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -88,7 +88,7 @@ const useAPI = (cookieUser) => {
 
   const addNote = useCallback(
     (note) =>
-      fetch("/notes", {
+      fetch("/api/notes", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -103,7 +103,7 @@ const useAPI = (cookieUser) => {
 
   const deleteNote = useCallback(
     (note) =>
-      fetch(`/notes/${note.id}`, {
+      fetch(`/api/notes/${note.id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}`, "x-email": email },
       }),
@@ -112,7 +112,7 @@ const useAPI = (cookieUser) => {
 
   const updateNote = useCallback(
     (notePartial) =>
-      fetch(`/notes/${notePartial.id}`, {
+      fetch(`/api/notes/${notePartial.id}`, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -127,7 +127,7 @@ const useAPI = (cookieUser) => {
 
   const getFields = useCallback(
     () =>
-      fetch("/fields", {
+      fetch("/api/fields", {
         method: "GET",
         headers: { Authorization: `Bearer ${token}`, "x-email": email },
       }).then((response) => response.json()),
@@ -136,7 +136,7 @@ const useAPI = (cookieUser) => {
 
   const addField = useCallback(
     (fieldName) =>
-      fetch("/fields", {
+      fetch("/api/fields", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -158,7 +158,7 @@ const useAPI = (cookieUser) => {
       };
       const promises = [];
       promises.push(
-        fetch(`/field_values`, {
+        fetch(`/api/field_values`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -172,7 +172,7 @@ const useAPI = (cookieUser) => {
 
       if (newTextValue !== undefined) {
         promises.push(
-          fetch(`/notes/${noteId}`, {
+          fetch(`/api/notes/${noteId}`, {
             method: "PATCH",
             headers: {
               Authorization: `Bearer ${token}`,
@@ -188,7 +188,7 @@ const useAPI = (cookieUser) => {
         return {
           id: noteId,
           field_values: [results[0]],
-          text: results[1].text,
+          text: results[1]?.text,
         };
       });
     },
@@ -197,7 +197,7 @@ const useAPI = (cookieUser) => {
 
   const updateFieldValue = useCallback(
     (noteId, fieldId, value) =>
-      fetch(`/field_values/${noteId}/${fieldId}`, {
+      fetch(`/api/field_values/${noteId}/${fieldId}`, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,

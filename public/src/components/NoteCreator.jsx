@@ -21,9 +21,12 @@ const NoteCreator = ({ onSelectionChange }) => {
       const addedNote = await api.addNote(note);
       addedNote.field_values = await Promise.all(
         newNote.field_values.map((fv) =>
-          api.useField(addedNote.id, fv.id, fv.value)
+          api
+            .useField(addedNote.id, fv.id, fv.value)
+            .then((note) => note.field_values[0])
         )
       );
+      // addedNote.field_values = updatedNotes.map((n) => n.field_values);
       // FIXME: update state variables instead of reloading page
       // window.location.reload();
       setUpdatedNote(addedNote);

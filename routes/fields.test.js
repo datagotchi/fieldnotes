@@ -30,6 +30,7 @@ describe("fields routes", () => {
     });
     it("should return 200 with valid authentication", async () => {
       console.log("Starting test for GET /fields with authentication");
+      // FIXME: this post request is not working
       const res = await request(app)
         .get("/fields")
         .set("Authorization", "Bearer test-token")

@@ -76,10 +76,10 @@ app.use(cookieParser());
 const staticPath = path.join(process.cwd(), "public/dist");
 app.use(express.static(staticPath));
 
-app.use("/users", usersRouter);
-app.use("/notes", notesRouter);
-app.use("/fields", fieldsRouter);
-app.use("/field_values", fieldValuesRouter);
+app.use("/api/users", usersRouter);
+app.use("/api/notes", notesRouter);
+app.use("/api/fields", fieldsRouter);
+app.use("/api/field_values", fieldValuesRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

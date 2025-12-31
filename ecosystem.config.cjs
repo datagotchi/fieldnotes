@@ -6,7 +6,7 @@ module.exports = {
       instances: 1, // Number of instances to run (e.g., "max" for all CPU cores)
       exec_mode: "cluster", // Execution mode, "cluster" for load balancing
       watch: true, // Restart the app on file changes (useful for development)
-      ignore_watch: ["node_modules"], // Files/directories to ignore when watching
+      ignore_watch: ["node_modules", "*.db-journal", "*.log"], // Ignore changes in these files/folders
       env_production: {
         NODE_ENV: "production", // Environment variables for production
         PORT: 80,

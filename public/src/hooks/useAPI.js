@@ -156,9 +156,9 @@ const useAPI = (cookieUser) => {
         note_id: noteId,
         value,
       };
-      const promises = [];
-      promises.push(
-        fetch(`/api/field_values`, {
+      const results = [];
+      results.push(
+        await fetch(`/api/field_values`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -167,12 +167,22 @@ const useAPI = (cookieUser) => {
             "x-email": email,
           },
           body: JSON.stringify(newField),
-        }).then((response) => response.json())
+        }).then(async (response) => {
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw {
+              status: response.status,
+              message: errorData.message || "Unknown server error",
+              code: errorData.code,
+            };
+          }
+          return response.json();
+        })
       );
 
       if (newTextValue !== undefined) {
-        promises.push(
-          fetch(`/api/notes/${noteId}`, {
+        results.push(
+          await fetch(`/api/notes/${noteId}`, {
             method: "PATCH",
             headers: {
               Authorization: `Bearer ${token}`,
@@ -184,13 +194,11 @@ const useAPI = (cookieUser) => {
           }).then((response) => response.json())
         );
       }
-      return Promise.all(promises).then((results) => {
-        return {
-          id: noteId,
-          field_values: [results[0]],
-          text: results[1]?.text,
-        };
-      });
+      return {
+        id: noteId,
+        field_values: [results[0]],
+        text: results[1]?.text,
+      };
     },
     [email, token]
   );

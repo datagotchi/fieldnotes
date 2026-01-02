@@ -26,9 +26,6 @@ const NoteCreator = ({ onSelectionChange }) => {
             .then((note) => note.field_values[0])
         )
       );
-      // addedNote.field_values = updatedNotes.map((n) => n.field_values);
-      // FIXME: update state variables instead of reloading page
-      // window.location.reload();
       setUpdatedNote(addedNote);
     }
   };

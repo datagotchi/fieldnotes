@@ -88,19 +88,21 @@ export const FieldTransferProvider = ({ children }) => {
                   };
                 }
               );
-            }
-            setUpdatedNote({
-              ...apiResponseNote,
-              datetime: new Date().toISOString(),
-            });
+              setUpdatedNote({
+                ...apiResponseNote,
+                datetime: new Date().toISOString(),
+              });
 
-            setFieldDefinitions(
-              fieldDefinitions.map((fd) =>
-                fd.id === field.id ? { ...fd, use_count: fd.use_count + 1 } : fd
-              )
-            );
+              setFieldDefinitions(
+                fieldDefinitions.map((fd) =>
+                  fd.id === field.id
+                    ? { ...fd, use_count: fd.use_count + 1 }
+                    : fd
+                )
+              );
+            }
           } catch (err) {
-            if (err.message?.includes("UNIQUE constraint failed")) {
+            if (err.message?.includes("SQLITE_CONSTRAINT_UNIQUE")) {
               return alertCantUseExistingField(field.name);
             }
           }

@@ -37,6 +37,11 @@ const FieldCloud = () => {
             </span>
           </span>
         ))}
+      {!fieldDefinitions ||
+        (fieldDefinitions.length === 0 && (
+          // FIXME: show controls to create a new field
+          <div></div>
+        ))}
     </div>
   );
 };

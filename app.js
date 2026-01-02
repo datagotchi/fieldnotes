@@ -47,7 +47,7 @@ const pool = {
       };
     } catch (err) {
       console.error("libSQL Error:", err.message);
-      console.error("Statement:", convertedSql);
+      console.error("Converted query:", convertedSql, args);
       throw err;
     }
   },

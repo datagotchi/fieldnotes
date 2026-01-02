@@ -9,7 +9,6 @@ router.post("/", authenticateuser, async (req, res, next) => {
     const result = await req.pool.query({
       text: `insert into field_values (note_id, field_id, value) 
              values ($1, $2, $3)
-             on conflict (note_id, field_id) do update set value = $3
              returning *`,
       values: [note_id, field_id, value],
     });
@@ -27,12 +26,11 @@ router.patch(
       const { note_id, field_id } = req.params;
       const { value } = req.body;
       const result = await req.pool.query({
-        text: `update field_values set value = $3 
-             where note_id = $1 and field_id = $2 
+        text: `update field_values set value = $1 
+             where note_id = $2 and field_id = $3 
              returning *`,
-        values: [note_id, field_id, value],
+        values: [value, note_id, field_id],
       });
-      // FIXME: it's not returning anything
       return res.json(result.rows[0]);
     } catch (err) {
       next(err);

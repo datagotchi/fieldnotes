@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from "react";
 
 import Header from "./components/header";
 import { styles } from "./constants";
-import useAPI from "./hooks/useAPI";
 import NoteCreator from "./components/NoteCreator";
 import Notes from "./components/Notes";
 import { useUserContext } from "./contexts/useUserContext";
@@ -10,21 +9,9 @@ import FieldCloud from "./components/FieldCloud";
 import { useFieldTransferContext } from "./contexts/useFieldTransferContext";
 
 const App = () => {
-  const [fieldDefinitions, setFieldDefinitions] = useState();
-  // TODO: move to Typescript & ESLint
-  const [newNote, setNewNote] = useState({ text: "", field_values: [] });
-
   const { setActiveSelection } = useFieldTransferContext();
 
   const { isAuthenticated, api, setUser } = useUserContext();
-
-  useEffect(() => {
-    if (api.email && api.token && !fieldDefinitions) {
-      api.getFields().then((definitions) => {
-        setFieldDefinitions(definitions);
-      });
-    }
-  }, [api, api?.email, api?.token, fieldDefinitions]);
 
   return (
     <div style={styles.app}>
@@ -36,8 +23,8 @@ const App = () => {
             <div style={styles.fieldsHeader}>
               <FieldCloud />
             </div>
-            <NoteCreator newNote={newNote} setNewNote={setNewNote} />
-            <Notes onSelectionChange={setActiveSelection} />
+            <NoteCreator />
+            <Notes />
           </>
         )}
         {!isAuthenticated && (

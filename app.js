@@ -9,6 +9,7 @@ import { createClient } from "@libsql/client";
 import usersRouter from "./routes/users.js";
 import notesRouter from "./routes/notes.js";
 import fieldsRouter from "./routes/fields.js";
+import fieldValuesRouter from "./routes/field_values.js";
 
 const client = createClient({
   url: "file:fieldnotes.db",
@@ -46,7 +47,7 @@ const pool = {
       };
     } catch (err) {
       console.error("libSQL Error:", err.message);
-      console.error("Statement:", convertedSql);
+      console.error("Converted query:", convertedSql, args);
       throw err;
     }
   },
@@ -75,9 +76,10 @@ app.use(cookieParser());
 const staticPath = path.join(process.cwd(), "public/dist");
 app.use(express.static(staticPath));
 
-app.use("/users", usersRouter);
-app.use("/notes", notesRouter);
-app.use("/fields", fieldsRouter);
+app.use("/api/users", usersRouter);
+app.use("/api/notes", notesRouter);
+app.use("/api/fields", fieldsRouter);
+app.use("/api/field_values", fieldValuesRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

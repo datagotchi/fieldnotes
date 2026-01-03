@@ -45,7 +45,7 @@ export const styles = {
   list: { listStyle: "none", padding: 0, margin: 0 },
   empty: { color: "#666", padding: 12 },
   item: { padding: 12, borderBottom: "1px solid #f0f0f0" },
-  itemText: { marginBottom: 8 },
+  itemText: {},
   itemMeta: {
     display: "flex",
     justifyContent: "space-between",
@@ -69,3 +69,13 @@ export const others = {
     cols: 67,
   },
 };
+
+export const emojis = [
+  { value: "🫀", label: "love" },
+  { value: "🧠", label: "thoughtful" },
+  { value: "😵‍💫", label: "overwhelmed" },
+  { value: "🔋", label: "energized" },
+  { value: "🔥", label: "excited" },
+  { value: "⚙️", label: "focused" },
+  { value: "🛡️", label: "protected" },
+];

@@ -2,18 +2,18 @@ import React, { useEffect, useState } from "react";
 
 import { styles } from "../constants";
 import Note from "./note";
-import useAPI from "../hooks/useAPI";
 import { useUserContext } from "../contexts/useUserContext";
 import { useFieldTransferContext } from "../contexts/useFieldTransferContext";
 
-const Notes = ({ onSelectionChange }) => {
+const Notes = () => {
   const [notes, setNotes] = useState();
 
   const { user, api } = useUserContext();
-  const { fieldDefinitions, updatedNote } = useFieldTransferContext();
+  const { fieldDefinitions, updatedNote, setUpdatedNote } =
+    useFieldTransferContext();
 
   useEffect(() => {
-    if (api.token && fieldDefinitions.length > 0 && !notes) {
+    if (api.token && fieldDefinitions && !notes) {
       api.getNotes().then((notes) => {
         const processedNotes = notes.map((n) => {
           n.field_values.forEach((fv) => {
@@ -31,12 +31,36 @@ const Notes = ({ onSelectionChange }) => {
 
   useEffect(() => {
     if (updatedNote && notes) {
-      const updatedList = notes.map((n) =>
-        n.id === updatedNote.id ? updatedNote : n
-      );
-      setNotes(updatedList);
+      const exists = notes.find((n) => n.id === updatedNote.id);
+
+      if (exists) {
+        setNotes(
+          notes.map((n) => {
+            if (n.id === updatedNote.id) {
+              // Merge logic: keep existing fields, but replace if IDs match,
+              // or append if the ID is new.
+              const incomingField = updatedNote.field_values?.[0];
+              const otherFields = n.field_values.filter(
+                (fv) => fv.id !== incomingField?.id
+              );
+
+              return {
+                ...n, // Keep existing note data
+                ...updatedNote, // Apply new text/updates
+                field_values: incomingField
+                  ? [...otherFields, incomingField]
+                  : n.field_values,
+              };
+            }
+            return n;
+          })
+        );
+      } else {
+        setNotes([updatedNote, ...notes]);
+      }
+      setUpdatedNote(undefined);
     }
-  }, [updatedNote]);
+  }, [updatedNote, notes]);
 
   return (
     <ul style={styles.list}>
@@ -52,19 +76,17 @@ const Notes = ({ onSelectionChange }) => {
             fontStyle: "italic",
           }}
         >
-          Click or tap a note's text or field values to edit them
+          Click or tap a note&apos;s text or field values to edit them
         </p>
       )}
       {notes &&
         notes
           .sort((a, b) => new Date(b.datetime) - new Date(a.datetime))
           .map((note) => {
-            const noteToRender =
-              updatedNote?.id === note.id ? updatedNote : note;
             return (
               <Note
                 user={user}
-                data={noteToRender}
+                data={note}
                 setData={(updatedNote) => {
                   const updatedNotes = notes.map((n) =>
                     n.id === updatedNote.id ? updatedNote : n
@@ -72,12 +94,11 @@ const Notes = ({ onSelectionChange }) => {
                   setNotes(updatedNotes);
                 }}
                 removeNote={async () => {
-                  await api.deleteNote(noteToRender);
-                  setNotes(notes.filter((n) => n.id !== noteToRender.id));
+                  await api.deleteNote(note);
+                  setNotes(notes.filter((n) => n.id !== note.id));
                 }}
                 fieldDefinitions={fieldDefinitions}
-                key={`note: ${noteToRender.id}`}
-                onSelectionChange={onSelectionChange}
+                key={`note: ${note.id}`}
               />
             );
           })}

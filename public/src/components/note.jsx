@@ -1,17 +1,17 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback } from "react";
 import EasyEdit from "react-easy-edit";
 
-import { styles } from "../constants";
-import useAPI from "../hooks/useAPI";
-import FieldControls from "./FieldControls";
+import { emojis, styles } from "../constants";
 import NoteEditor from "./NoteEditor";
 import Field from "./Field";
 import { useFieldTransferContext } from "../contexts/useFieldTransferContext";
+import { useUserContext } from "../contexts/useUserContext";
+import EmojiSelection from "./EmojiSelection";
 
-const Note = ({ user, data, setData, removeNote, onSelectionChange }) => {
+const Note = ({ user, data, setData, removeNote }) => {
   const { fieldDefinitions } = useFieldTransferContext();
 
-  const api = useAPI(user);
+  const { api } = useUserContext();
 
   const getFieldLabel = useCallback(
     (fieldId) => {
@@ -29,7 +29,16 @@ const Note = ({ user, data, setData, removeNote, onSelectionChange }) => {
 
   return (
     <li key={`note: ${data.id}`} style={styles.item}>
-      <div style={{ ...styles.itemText, whiteSpace: "pre-line" }}>
+      <div
+        style={{
+          ...styles.itemText,
+          whiteSpace: "pre-line",
+          display: "flex",
+          flexDirection: "col",
+          gap: "5px",
+        }}
+      >
+        <strong>Text:</strong>{" "}
         <EasyEdit
           type="textarea"
           inputAttributes={{ rows: 10, cols: 100 }}
@@ -39,7 +48,8 @@ const Note = ({ user, data, setData, removeNote, onSelectionChange }) => {
               id: data.id,
               text: newValue,
             });
-            data.text = changes.text;
+            // data.text = changes.text;
+            setData({ ...data, text: changes.text });
           }}
           editComponent={
             <NoteEditor
@@ -47,33 +57,66 @@ const Note = ({ user, data, setData, removeNote, onSelectionChange }) => {
               note={data}
               setNote={setData}
               fieldDefinitions={fieldDefinitions}
-              afterAddingField={(updatedNote) => {
-                setData(updatedNote);
-              }}
-              onSelectionChange={onSelectionChange}
             />
           }
         />
       </div>
 
-      <table className="fieldTable">
-        <tbody>
-          {data.field_values &&
-            data.field_values
-              .sort((a, b) => a.id - b.id)
-              .map((fv) => (
-                <Field
-                  user={user}
-                  data={{
-                    ...fv,
-                    name: getFieldLabel(fv.field_id ?? fv.id),
-                    note_id: data.id,
-                  }}
-                  key={`note field #${fv.id}`}
-                />
-              ))}
-        </tbody>
-      </table>
+      {data.emoji && (
+        <div>
+          <strong>Reaction:</strong> {data.emoji} (
+          {emojis.find((e) => e.value === data.emoji)?.label})
+        </div>
+      )}
+
+      <EmojiSelection
+        noteId={data.id}
+        onSelect={async (noteId, emoji) => {
+          try {
+            const updatedNote = await api.updateNote({
+              id: noteId,
+              emoji,
+            });
+            setData({ ...data, ...updatedNote });
+          } catch (err) {
+            console.error("Failed to save affective state:", err);
+          }
+        }}
+      />
+      {data.field_values && data.field_values.length > 0 && (
+        <>
+          <p style={{ margin: 0 }}>
+            <strong>Custom Fields:</strong>
+          </p>
+          <table className="fieldTable" key={`note #${data.id} fieldTable`}>
+            <tbody>
+              {data.field_values
+                .sort((a, b) => a.id - b.id)
+                .map((fv) => (
+                  <Field
+                    user={user}
+                    data={{
+                      ...fv,
+                      name: getFieldLabel(fv.field_id ?? fv.id),
+                      note_id: data.id,
+                    }}
+                    key={`note field #${fv.id}`}
+                    deleteThisField={async () => {
+                      await api.deleteField(data.id, fv.field_id);
+
+                      setData({
+                        ...data,
+                        field_values: data.field_values.filter(
+                          (item) => item.id !== fv.id
+                        ),
+                      });
+                    }}
+                  />
+                ))}
+            </tbody>
+          </table>
+        </>
+      )}
       <div style={styles.itemMeta}>
         <small>{new Date(data.datetime).toLocaleString()}</small>
         <button

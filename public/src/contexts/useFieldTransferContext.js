@@ -13,11 +13,14 @@ const FieldTransferContext = createContext(undefined);
 
 // TODO: If this context grows too big, split into FieldDefinitionContext and ActiveSelectionContext to prevent unnecessary re-renders.
 export const FieldTransferProvider = ({ children }) => {
-  const [fieldDefinitions, setFieldDefinitions] = useState([]);
+  const [fieldDefinitions, setFieldDefinitions] = useState();
   const [selectedField, setSelectedField] = useState();
   const [updatedNote, setUpdatedNote] = useState();
+  // TODO: move to Typescript & ESLint to handle state variable object attributes
+  const [newNote, setNewNote] = useState({ text: "", field_values: [] });
 
   // The "Transfer Payload"
+  // TODO: move to Typescript & ESLint to handle state variable object attributes
   const [activeSelection, setActiveSelection] = useState({
     noteId: null,
     text: "",
@@ -29,47 +32,136 @@ export const FieldTransferProvider = ({ children }) => {
   const { api } = useUserContext();
 
   useEffect(() => {
-    if (api?.token && fieldDefinitions.length === 0) {
+    if (api?.token && !fieldDefinitions) {
       api.getFields().then((fields) => {
         setFieldDefinitions(fields);
       });
     }
   }, [api?.token, fieldDefinitions]);
 
+  const alertCantUseExistingField = (fieldName) => {
+    return alert(
+      `This field (${fieldName}) is already used in this note. To edit it, click or tap on its value below.`
+    );
+  };
+
+  const trimNoteFromSelection = useCallback(() => {
+    if (activeSelection.text) {
+      const textBefore = activeSelection.fullText.substring(
+        0,
+        activeSelection.startIndex
+      );
+      const textAfter = activeSelection.fullText.substring(
+        activeSelection.endIndex
+      );
+      return textBefore + textAfter;
+    }
+  }, [activeSelection]);
+
   const handlePillClick = useCallback(
     async (e) => {
       const fieldName = e.currentTarget.childNodes[0].nodeValue;
-      const field = fieldDefinitions.find((fd) => fd.name === fieldName);
-      if (activeSelection.noteId && activeSelection.text) {
-        // 1. Calculate the new note text by removing the selection
-        const textBefore = activeSelection.fullText.substring(
-          0,
-          activeSelection.startIndex
-        );
-        const textAfter = activeSelection.fullText.substring(
-          activeSelection.endIndex
-        );
-        const newNoteBody = textBefore + textAfter;
+      const field = fieldDefinitions?.find((fd) => fd.name === fieldName);
+      if (field) {
+        if (activeSelection.text && activeSelection.noteId && api?.token) {
+          try {
+            const newNoteBody = trimNoteFromSelection();
 
-        // 2. Perform the PATCH using your existing hook
-        const updatedNote = await api.useField(
-          activeSelection.noteId,
-          field.id,
-          activeSelection.text,
-          newNoteBody
-        );
-        setUpdatedNote(updatedNote);
+            const apiResponseNote = await api.useField(
+              activeSelection.noteId,
+              field.id,
+              activeSelection.text,
+              newNoteBody
+            );
+            if (
+              apiResponseNote &&
+              Array.isArray(apiResponseNote.field_values)
+            ) {
+              apiResponseNote.field_values = apiResponseNote.field_values.map(
+                (fv) => {
+                  const fieldDef = fieldDefinitions?.find(
+                    (fd) => fd.id === fv.field_id
+                  );
+                  return {
+                    ...fv,
+                    name: fieldDef ? fieldDef.name : "Unknown Field",
+                  };
+                }
+              );
+              setUpdatedNote({
+                ...apiResponseNote,
+                datetime: new Date().toISOString(),
+              });
 
-        // 3. Refresh the fields to see that count (n) increment!
-        const updatedFields = await api.getFields();
-        setFieldDefinitions(updatedFields);
+              setFieldDefinitions(
+                fieldDefinitions?.map((fd) =>
+                  fd.id === field.id
+                    ? { ...fd, use_count: fd.use_count + 1 }
+                    : fd
+                )
+              );
+
+              clearSelection();
+            }
+          } catch (err) {
+            const errorObj = err || {};
+            if (errorObj.error?.code?.includes("SQLITE_CONSTRAINT_UNIQUE")) {
+              return alertCantUseExistingField(field.name);
+            }
+          }
+        } else if (activeSelection.text && !activeSelection.noteId) {
+          // Stage the field for the NoteCreator
+          const isDuplicate = newNote.field_values.some(
+            (fv) => fv.field_id === field.id || fv.name === field.name
+          );
+
+          if (isDuplicate) {
+            return alertCantUseExistingField(field.name);
+          }
+
+          const updatedText = trimNoteFromSelection();
+
+          setNewNote({
+            ...newNote,
+            text: updatedText,
+            field_values: [
+              ...(newNote.field_values || []),
+              {
+                id: field.id,
+                field_id: field.id,
+                value: activeSelection.text,
+                name: field.name,
+              },
+            ],
+          });
+        }
         clearSelection();
-      } else {
-        setSelectedField(field);
       }
     },
-    [fieldDefinitions, activeSelection]
+    [api?.token, fieldDefinitions, activeSelection, newNote]
   );
+
+  const handleTextareaSelection = (e) => {
+    const textarea = e.target;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const value = textarea.value.substring(start, end);
+    if (value.length > 0) {
+      // TODO: move to Typescript
+      const selectionData = {
+        noteId: textarea.dataset.noteId
+          ? JSON.parse(textarea.dataset.noteId)
+          : null,
+        text: value,
+        fullText: textarea.value,
+        startIndex: start,
+        endIndex: end,
+      };
+      setActiveSelection(selectionData);
+    } else {
+      setActiveSelection({ noteId: null, text: "" });
+    }
+  };
 
   const clearSelection = () =>
     setActiveSelection({
@@ -92,8 +184,11 @@ export const FieldTransferProvider = ({ children }) => {
       updatedNote,
       setUpdatedNote,
       handlePillClick,
+      newNote,
+      setNewNote,
+      handleTextareaSelection,
     }),
-    [fieldDefinitions, selectedField, activeSelection]
+    [fieldDefinitions, selectedField, activeSelection, updatedNote, newNote]
   );
 
   return (

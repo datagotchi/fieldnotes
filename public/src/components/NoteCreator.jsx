@@ -2,95 +2,31 @@ import React, { useCallback, useEffect, useState } from "react";
 import EasyEdit from "react-easy-edit";
 
 import { others, styles } from "./../constants";
-import FieldControls from "./FieldControls";
 import { useUserContext } from "../contexts/useUserContext";
 import { useFieldTransferContext } from "../contexts/useFieldTransferContext";
+import Field from "./Field";
 
-const NoteCreator = ({ newNote, setNewNote }) => {
-  const [selectedText, setSelectedText] = useState("");
-
-  const { user, api } = useUserContext();
-  const { fieldDefinitions } = useFieldTransferContext();
-
-  useEffect(() => {
-    if (
-      user &&
-      newNote.field_values.length > 0 &&
-      fieldDefinitions.length > 0
-    ) {
-      const updatedFieldValues = newNote.field_values.map((fv) => {
-        const field = fieldDefinitions.find((fd) => fd.id === fv.id);
-        return field && fv.name !== field.name
-          ? { ...fv, name: field.name }
-          : fv;
-      });
-      if (
-        JSON.stringify(updatedFieldValues) !==
-        JSON.stringify(newNote.field_values)
-      ) {
-        setNewNote((prevNote) => ({
-          ...prevNote,
-          field_values: updatedFieldValues,
-        }));
-      }
-    }
-  }, [user, newNote.field_values, fieldDefinitions]);
-
-  const handleAddNewFieldToNewNote = useCallback(
-    async (field) => {
-      if (newNote.field_values.find((fv) => fv.name === field.name)) {
-        return alert(
-          "Cannot re-add field to new note; modify its value by clicking or tapping on it"
-        );
-      }
-      const newField = await api.addField(field.name);
-      setNewNote({
-        ...newNote,
-        field_values: [
-          ...newNote.field_values,
-          {
-            id: newField.id,
-            name: newField.name,
-            value: "",
-          },
-        ],
-      });
-    },
-    [newNote]
-  );
-
-  const handleAddExistingFieldToNewNote = useCallback(
-    async (field) => {
-      if (newNote.field_values.find((fv) => fv.name === field.name)) {
-        return alert(
-          "Cannot re-add field to new note; modify its value by clicking or tapping on it"
-        );
-      }
-      setNewNote({
-        ...newNote,
-        field_values: [
-          ...newNote.field_values,
-          {
-            id: field.id,
-            name: field.name,
-            value: "",
-          },
-        ],
-      });
-    },
-    [newNote]
-  );
+const NoteCreator = () => {
+  const { api } = useUserContext();
+  const {
+    newNote,
+    setNewNote,
+    setUpdatedNote,
+    activeSelection,
+    handleTextareaSelection,
+  } = useFieldTransferContext();
 
   const submitNewNote = async (note) => {
     if (note.text || note.field_values.length > 0) {
       const addedNote = await api.addNote(note);
       addedNote.field_values = await Promise.all(
         newNote.field_values.map((fv) =>
-          api.useField(addedNote.id, fv.id, fv.value)
+          api
+            .useField(addedNote.id, fv.id, fv.value)
+            .then((note) => note.field_values[0])
         )
       );
-      // TODO: update state variables instead of reloading page
-      window.location.reload();
+      setUpdatedNote(addedNote);
     }
   };
 
@@ -109,37 +45,39 @@ const NoteCreator = ({ newNote, setNewNote }) => {
         aria-label="New note"
         rows={others.noteCreator.rows}
         cols={others.noteCreator.cols}
+        onSelect={handleTextareaSelection}
       />
-      {newNote.field_values.length > 0 &&
-        newNote.field_values.map((fv) => (
-          <div
-            key={`used field for new note #${fv.id}`}
-            style={{ display: "flex", gap: "5px" }}
-          >
-            <strong>{fv.name}:</strong>
-            {/* TODO: switch to react-edit-text to avoid react controlled/uncontrolled errors */}
-            <EasyEdit
-              type="text"
-              value={fv.value}
-              onSave={(newValue) => {
-                setNewNote({
-                  ...newNote,
-                  field_values: newNote.field_values.map((fv2) =>
-                    fv2.id === fv.id ? { ...fv2, value: newValue } : fv2
-                  ),
-                });
-              }}
-            />
-          </div>
-        ))}
-      <FieldControls
-        note={newNote}
-        selectedText={selectedText}
-        setSelectedText={setSelectedText}
-        fieldDefinitions={fieldDefinitions}
-        handleAddNewFieldToNote={handleAddNewFieldToNewNote}
-        handleAddExistingFieldToNote={handleAddExistingFieldToNewNote}
-      />
+      {activeSelection.text && !activeSelection.noteId && (
+        <p>
+          <strong>Selected text: </strong>
+          {activeSelection.text}
+        </p>
+      )}
+      {newNote.field_values.length > 0 && (
+        <p style={{ margin: 0 }}>
+          <strong>Custom Fields:</strong>
+        </p>
+      )}
+      <table className="fieldTable" key="new note fieldTable">
+        <tbody>
+          {newNote.field_values.length > 0 &&
+            newNote.field_values.map((fv) => (
+              <Field
+                key={`new note field #${fv.id}`}
+                data={fv}
+                isStaged={true}
+                deleteThisField={async () => {
+                  setNewNote({
+                    ...newNote,
+                    field_values: newNote.field_values.filter(
+                      (item) => item.id !== fv.id
+                    ),
+                  });
+                }}
+              />
+            ))}
+        </tbody>
+      </table>
       <button
         style={styles.button}
         onClick={async (e) => {

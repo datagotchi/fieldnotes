@@ -4,7 +4,7 @@ import EasyEdit from "react-easy-edit";
 import { useUserContext } from "../contexts/useUserContext";
 import { useFieldTransferContext } from "../contexts/useFieldTransferContext";
 
-const Field = ({ data, isStaged = false }) => {
+const Field = ({ data, isStaged = false, deleteThisField }) => {
   const { api } = useUserContext();
   const { setNewNote, newNote, setUpdatedNote } = useFieldTransferContext();
 
@@ -49,16 +49,7 @@ const Field = ({ data, isStaged = false }) => {
                     ),
                   });
                 } else {
-                  const result = await api.updateNote({
-                    id: data.note_id,
-                    field_values: [
-                      {
-                        field_id: data.field_id,
-                        field_value: newValue,
-                      },
-                    ],
-                  });
-
+                  const result = await deleteThisField();
                   setUpdatedNote(result);
                 }
               }

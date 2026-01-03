@@ -101,6 +101,16 @@ const Note = ({ user, data, setData, removeNote, onSelectionChange }) => {
                       note_id: data.id,
                     }}
                     key={`note field #${fv.id}`}
+                    deleteThisField={async () => {
+                      await api.deleteField(data.id, fv.field_id);
+
+                      setData({
+                        ...data,
+                        field_values: data.field_values.filter(
+                          (item) => item.id !== fv.id
+                        ),
+                      });
+                    }}
                   />
                 ))}
             </tbody>

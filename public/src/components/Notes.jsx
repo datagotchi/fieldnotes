@@ -76,7 +76,7 @@ const Notes = ({ onSelectionChange }) => {
             fontStyle: "italic",
           }}
         >
-          Click or tap a note's text or field values to edit them
+          Click or tap a note&apos;s text or field values to edit them
         </p>
       )}
       {notes &&

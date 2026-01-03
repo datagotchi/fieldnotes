@@ -66,6 +66,14 @@ const NoteCreator = ({ onSelectionChange }) => {
                 key={`new note field #${fv.id}`}
                 data={fv}
                 isStaged={true}
+                deleteThisField={async () => {
+                  setNewNote({
+                    ...newNote,
+                    field_values: newNote.field_values.filter(
+                      (item) => item.id !== fv.id
+                    ),
+                  });
+                }}
               />
             ))}
         </tbody>

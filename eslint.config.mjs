@@ -1,7 +1,8 @@
 import globals from "globals";
 
 import jsPlugin from "@eslint/js";
-import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
+// import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
+import eslintPluginPrettier from "eslint-plugin-prettier";
 
 import reactPlugin from "eslint-plugin-react";
 // import reactHooksPlugin from "eslint-plugin-react-hooks";
@@ -60,6 +61,7 @@ export default [
     plugins: {
       js: jsPlugin,
       react: reactPlugin,
+      // prettier: eslintPluginPrettier,
       // "@typescript-eslint": tseslint.plugin,
       // "react-hooks": reactHooksPlugin,
     },
@@ -82,6 +84,7 @@ export default [
     rules: {
       ...jsPlugin.configs.recommended.rules,
       ...reactPlugin.configs.flat.recommended.rules,
+      // ...eslintPluginPrettier.configs.recommended.rules,
       // ...reactHooksPlugin.configs.recommended.rules,
       // ...tseslint.configs.recommended.rules,
 
@@ -154,5 +157,6 @@ export default [
   //     "@next/next/no-img-element": "error",
   //   },
   // },
-  eslintPluginPrettierRecommended,
+  // eslintPluginPrettierRecommended,
+  // eslintPluginPrettier,
 ];

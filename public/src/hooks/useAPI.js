@@ -221,6 +221,15 @@ const useAPI = (cookieUser) => {
     [email, token]
   );
 
+  const deleteField = useCallback(
+    (noteId, fieldId) =>
+      fetch(`/api/field_values/${noteId}/${fieldId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}`, "x-email": email },
+      }),
+    [email, token]
+  );
+
   return {
     email,
     token,
@@ -235,6 +244,7 @@ const useAPI = (cookieUser) => {
     addField,
     useField,
     updateFieldValue,
+    deleteField,
   };
 };
 

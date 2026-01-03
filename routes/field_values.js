@@ -50,6 +50,7 @@ router.delete(
       });
       res.sendStatus(204);
     } catch (err) {
+      console.error(err);
       next(err);
     }
   }

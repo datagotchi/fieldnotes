@@ -48,7 +48,7 @@ router.delete(
         text: "delete from field_values where note_id = $1 and field_id = $2",
         values: [note_id, field_id],
       });
-      res.sendstatus(204);
+      res.sendStatus(204);
     } catch (err) {
       next(err);
     }

@@ -52,13 +52,6 @@ router.delete("/:id", authenticateUser, async (req, res, next) => {
     const fieldId = req.params.id;
     const user_id = req.user.id;
 
-    // First, delete associated field_values
-    await req.pool.query({
-      text: "delete from field_values where field_id = $1",
-      values: [fieldId],
-    });
-
-    // Then, delete the field itself
     await req.pool.query({
       text: "delete from fields where id = $1 and user_id = $2",
       values: [fieldId, user_id],

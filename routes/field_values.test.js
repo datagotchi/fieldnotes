@@ -13,26 +13,25 @@ describe("field_values routes", () => {
 
   beforeEach(() => {
     pool = {
-      query: jest.fn(),
+      query: jest.fn().mockResolvedValue({ rows: [] }),
     };
     app = express();
     app.use(express.json());
-    // Inject mock pool into req
     app.use((req, res, next) => {
       req.pool = pool;
       next();
     });
     app.use("/", router);
-    // Error handler for testing
     app.use((err, req, res, next) => {
       res.status(500).json({ error: err.message });
     });
   });
 
   describe("POST /", () => {
+    // TODO: figure out how to test auth middleware
     it("should insert a field value and return 201", async () => {
       const fakeRow = { note_id: 1, field_id: 2, value: "foo" };
-      pool.query.mockResolvedValue({ rows: [fakeRow] });
+      pool.query.mockResolvedValueOnce({ rows: [fakeRow] });
 
       const res = await request(app)
         .post("/")
@@ -57,9 +56,10 @@ describe("field_values routes", () => {
   });
 
   describe("PATCH /:note_id/:field_id", () => {
+    // TODO: figure out how to test auth middleware
     it("should update a field value and return it", async () => {
       const fakeRow = { note_id: "1", field_id: "2", value: "bar" };
-      pool.query.mockResolvedValue({ rows: [fakeRow] });
+      pool.query.mockResolvedValueOnce({ rows: [fakeRow] });
 
       const res = await request(app).patch("/1/2").send({ value: "bar" });
 
@@ -81,14 +81,12 @@ describe("field_values routes", () => {
 
   describe("DELETE /:note_id/:field_id", () => {
     it("should delete a field value and return 204", async () => {
-      pool.query.mockResolvedValue({});
+      pool.query.mockResolvedValueOnce({});
       const res = await request(app).delete("/1/2");
       expect(pool.query).toHaveBeenCalledWith({
         text: expect.stringContaining("delete from field_values"),
         values: ["1", "2"],
       });
-      // Note: The code has a typo: res.sendstatus(204) should be res.sendStatus(204)
-      // So this will actually throw, but let's test as if it was correct:
       expect(res.status).toBe(204);
     });
 

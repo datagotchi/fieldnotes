@@ -59,7 +59,7 @@ export default [
       parserOptions: {
         project: "./tsconfig.json",
         ecmaFeatures: {
-          enableJsx: false,
+          enableJsx: true,
         },
       },
     },
@@ -68,6 +68,8 @@ export default [
   {
     rules: {
       ...jsPlugin.configs.recommended.rules,
+      // ...reactPlugin.configs.flat.recommended,
+      // ...reactHooksPlugin.configs.recommended.rules,
       // ...tseslint.configs.recommended.rules,
 
       "no-unused-vars": "off",

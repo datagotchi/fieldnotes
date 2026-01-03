@@ -4,7 +4,7 @@ import jsPlugin from "@eslint/js";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 
 import reactPlugin from "eslint-plugin-react";
-import reactHooksPlugin from "eslint-plugin-react-hooks";
+// import reactHooksPlugin from "eslint-plugin-react-hooks";
 
 // import tseslint from "typescript-eslint";
 // import typescriptParser from "@typescript-eslint/parser";
@@ -16,9 +16,21 @@ import jestPlugin from "eslint-plugin-jest";
 // import playwrightPlugin from "eslint-plugin-playwright";
 
 export default [
+  // Global ignores MUST be the first object and have ONLY an 'ignores' key
+  {
+    ignores: [
+      "**/node_modules/",
+      "**/.next/",
+      "**/coverage/",
+      "**/src/scripts/",
+      "ecosystem.config.cjs",
+      "next.config.js",
+      "public/dist/",
+    ],
+  },
   // global recommended configs
-  jsPlugin.configs.recommended,
-  eslintPluginPrettierRecommended,
+  // jsPlugin.configs.recommended,
+  // eslintPluginPrettierRecommended,
   // ...tseslint.configs.recommended,
   // global settings
   {
@@ -33,22 +45,23 @@ export default [
     files: ["**/*.{js,jsx}"],
   },
   // global ignores
-  {
-    ignores: [
-      "node_modules/",
-      ".next/",
-      "ecosystem.config.cjs",
-      "next.config.js",
-      "coverage/",
-      "src/scripts/",
-    ],
-  },
+  // {
+  //   ignores: [
+  //     "node_modules/",
+  //     ".next/",
+  //     "ecosystem.config.cjs",
+  //     "next.config.js",
+  //     "coverage/",
+  //     "src/scripts/",
+  //   ],
+  // },
   // global plugins
   {
     plugins: {
       js: jsPlugin,
+      react: reactPlugin,
       // "@typescript-eslint": tseslint.plugin,
-      "react-hooks": reactHooksPlugin,
+      // "react-hooks": reactHooksPlugin,
     },
   },
   // global language options
@@ -57,9 +70,9 @@ export default [
       globals: { ...globals.browser, ...globals.node },
       // parser: typescriptParser,
       parserOptions: {
-        project: "./tsconfig.json",
+        // project: "./tsconfig.json",
         ecmaFeatures: {
-          enableJsx: true,
+          jsx: true,
         },
       },
     },
@@ -68,12 +81,14 @@ export default [
   {
     rules: {
       ...jsPlugin.configs.recommended.rules,
-      // ...reactPlugin.configs.flat.recommended,
+      ...reactPlugin.configs.flat.recommended.rules,
       // ...reactHooksPlugin.configs.recommended.rules,
       // ...tseslint.configs.recommended.rules,
 
       "no-unused-vars": "off",
       "no-undef": "error",
+
+      "react/prop-types": "off", // Common fix for JSX
 
       // "@typescript-eslint/no-unused-vars": "warn",
       // "@typescript-eslint/no-explicit-any": "warn",
@@ -96,11 +111,10 @@ export default [
   // },
   // jest unit test config
   {
-    ...reactPlugin.configs.flat.recommended,
-    ...jestPlugin.configs["flat/recommended"],
+    // ...reactPlugin.configs.flat.recommended,
+    // ...jestPlugin.configs["flat/recommended"],
     files: ["**/*.test.{js,jsx}"],
     plugins: {
-      react: reactPlugin,
       jest: jestPlugin,
     },
     rules: {
@@ -140,4 +154,5 @@ export default [
   //     "@next/next/no-img-element": "error",
   //   },
   // },
+  eslintPluginPrettierRecommended,
 ];

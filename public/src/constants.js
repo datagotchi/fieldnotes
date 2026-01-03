@@ -69,3 +69,13 @@ export const others = {
     cols: 67,
   },
 };
+
+export const emojis = [
+  { value: "🫀", label: "love" },
+  { value: "🧠", label: "thoughtful" },
+  { value: "😵‍💫", label: "overwhelmed" },
+  { value: "🔋", label: "energized" },
+  { value: "🔥", label: "excited" },
+  { value: "⚙️", label: "focused" },
+  { value: "🛡️", label: "protected" },
+];

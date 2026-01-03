@@ -23,8 +23,8 @@ const App = () => {
             <div style={styles.fieldsHeader}>
               <FieldCloud />
             </div>
-            <NoteCreator onSelectionChange={setActiveSelection} />
-            <Notes onSelectionChange={setActiveSelection} />
+            <NoteCreator />
+            <Notes />
           </>
         )}
         {!isAuthenticated && (

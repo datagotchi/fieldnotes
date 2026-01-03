@@ -6,7 +6,7 @@ import { useUserContext } from "../contexts/useUserContext";
 import { useFieldTransferContext } from "../contexts/useFieldTransferContext";
 import Field from "./Field";
 
-const NoteCreator = ({ onSelectionChange }) => {
+const NoteCreator = () => {
   const { api } = useUserContext();
   const {
     newNote,

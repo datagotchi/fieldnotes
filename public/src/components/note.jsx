@@ -1,14 +1,14 @@
 import React, { useCallback } from "react";
 import EasyEdit from "react-easy-edit";
 
-import { styles } from "../constants";
+import { emojis, styles } from "../constants";
 import NoteEditor from "./NoteEditor";
 import Field from "./Field";
 import { useFieldTransferContext } from "../contexts/useFieldTransferContext";
 import { useUserContext } from "../contexts/useUserContext";
-import EmojiSelection, { emojis } from "./EmojiSelection";
+import EmojiSelection from "./EmojiSelection";
 
-const Note = ({ user, data, setData, removeNote, onSelectionChange }) => {
+const Note = ({ user, data, setData, removeNote }) => {
   const { fieldDefinitions } = useFieldTransferContext();
 
   const { api } = useUserContext();

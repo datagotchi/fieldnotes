@@ -5,7 +5,7 @@ import Note from "./note";
 import { useUserContext } from "../contexts/useUserContext";
 import { useFieldTransferContext } from "../contexts/useFieldTransferContext";
 
-const Notes = ({ onSelectionChange }) => {
+const Notes = () => {
   const [notes, setNotes] = useState();
 
   const { user, api } = useUserContext();
@@ -99,7 +99,6 @@ const Notes = ({ onSelectionChange }) => {
                 }}
                 fieldDefinitions={fieldDefinitions}
                 key={`note: ${note.id}`}
-                onSelectionChange={onSelectionChange}
               />
             );
           })}

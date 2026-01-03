@@ -1,14 +1,5 @@
 import React, { useMemo, useState } from "react";
-
-export const emojis = [
-  { value: "🫀", label: "love" },
-  { value: "🧠", label: "thoughtful" },
-  { value: "😵‍💫", label: "overwhelmed" },
-  { value: "🔋", label: "energized" },
-  { value: "🔥", label: "excited" },
-  { value: "⚙️", label: "focused" },
-  { value: "🛡️", label: "protected" },
-];
+import { emojis } from "../constants";
 
 const EmojiSelection = ({ noteId, onSelect }) => {
   const [selectedEmoji, setSelectedEmoji] = useState("😀");

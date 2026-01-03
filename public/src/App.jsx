@@ -28,17 +28,6 @@ const App = () => {
       <Header />
 
       <main style={styles.main}>
-        {/* FIXME: test these use cases:
-        ~~1. create note without field~~
-        ! not possible anymore ~~2. create note with blank field~~ 
-        ~~3. create note with valued field~~
-        ~~4. update note without fields with new field~~
-        ~~5. update existing note's field value~~
-        ~~6. set a field's value to empty to get Click to Edit back~~
-        ~~7. delete a field with a value~~
-        8. try to add the same field twice to new note
-        9. try to add the same field twice to an existing note
-         */}
         {isAuthenticated && (
           <>
             <div style={styles.fieldsHeader}>

@@ -84,7 +84,7 @@ export const FieldTransferProvider = ({ children }) => {
                   );
                   return {
                     ...fv,
-                    name: fieldDef ? fieldDef.name : fv.name,
+                    name: fieldDef ? fieldDef.name : "Unknown Field",
                   };
                 }
               );
@@ -100,9 +100,12 @@ export const FieldTransferProvider = ({ children }) => {
                     : fd
                 )
               );
+
+              clearSelection();
             }
           } catch (err) {
-            if (err.message?.includes("SQLITE_CONSTRAINT_UNIQUE")) {
+            const errorObj = err || {};
+            if (errorObj.error?.code?.includes("SQLITE_CONSTRAINT_UNIQUE")) {
               return alertCantUseExistingField(field.name);
             }
           }

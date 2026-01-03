@@ -53,6 +53,11 @@ const NoteCreator = ({ onSelectionChange }) => {
           {activeSelection.text}
         </p>
       )}
+      {newNote.field_values.length > 0 && (
+        <p style={{ margin: 0 }}>
+          <strong>Custom Fields:</strong>
+        </p>
+      )}
       <table className="fieldTable" key="new note fieldTable">
         <tbody>
           {newNote.field_values.length > 0 &&

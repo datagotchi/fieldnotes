@@ -45,7 +45,7 @@ export const styles = {
   list: { listStyle: "none", padding: 0, margin: 0 },
   empty: { color: "#666", padding: 12 },
   item: { padding: 12, borderBottom: "1px solid #f0f0f0" },
-  itemText: { marginBottom: 8 },
+  itemText: {},
   itemMeta: {
     display: "flex",
     justifyContent: "space-between",

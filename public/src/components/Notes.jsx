@@ -32,16 +32,33 @@ const Notes = ({ onSelectionChange }) => {
   useEffect(() => {
     if (updatedNote && notes) {
       const exists = notes.find((n) => n.id === updatedNote.id);
-      const updatedNoteCopy = { ...updatedNote };
-      setUpdatedNote(undefined);
 
       if (exists) {
         setNotes(
-          notes.map((n) => (n.id === updatedNoteCopy.id ? updatedNoteCopy : n))
+          notes.map((n) => {
+            if (n.id === updatedNote.id) {
+              // Merge logic: keep existing fields, but replace if IDs match,
+              // or append if the ID is new.
+              const incomingField = updatedNote.field_values?.[0];
+              const otherFields = n.field_values.filter(
+                (fv) => fv.id !== incomingField?.id
+              );
+
+              return {
+                ...n, // Keep existing note data
+                ...updatedNote, // Apply new text/updates
+                field_values: incomingField
+                  ? [...otherFields, incomingField]
+                  : n.field_values,
+              };
+            }
+            return n;
+          })
         );
       } else {
-        setNotes([updatedNoteCopy, ...notes]);
+        setNotes([updatedNote, ...notes]);
       }
+      setUpdatedNote(undefined);
     }
   }, [updatedNote, notes]);
 
@@ -66,12 +83,10 @@ const Notes = ({ onSelectionChange }) => {
         notes
           .sort((a, b) => new Date(b.datetime) - new Date(a.datetime))
           .map((note) => {
-            const noteToRender =
-              updatedNote?.id === note.id ? updatedNote : note;
             return (
               <Note
                 user={user}
-                data={noteToRender}
+                data={note}
                 setData={(updatedNote) => {
                   const updatedNotes = notes.map((n) =>
                     n.id === updatedNote.id ? updatedNote : n
@@ -79,11 +94,11 @@ const Notes = ({ onSelectionChange }) => {
                   setNotes(updatedNotes);
                 }}
                 removeNote={async () => {
-                  await api.deleteNote(noteToRender);
-                  setNotes(notes.filter((n) => n.id !== noteToRender.id));
+                  await api.deleteNote(note);
+                  setNotes(notes.filter((n) => n.id !== note.id));
                 }}
                 fieldDefinitions={fieldDefinitions}
-                key={`note: ${noteToRender.id}`}
+                key={`note: ${note.id}`}
                 onSelectionChange={onSelectionChange}
               />
             );

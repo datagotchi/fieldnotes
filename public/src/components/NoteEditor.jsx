@@ -1,28 +1,14 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React from "react";
 
 import { useFieldTransferContext } from "../contexts/useFieldTransferContext";
-import { useUserContext } from "../contexts/useUserContext";
 
-const NoteEditor = ({ note, setNote, afterAddingField, onSelectionChange }) => {
-  const { api } = useUserContext();
-
+const NoteEditor = ({ note, setNote }) => {
   const handleChange = (e) => {
     setNote({ ...note, text: e.target.value });
   };
 
-  const {
-    activeSelection,
-    setActiveSelection,
-    updatedNote,
-    setUpdatedNote,
-    handleTextareaSelection,
-  } = useFieldTransferContext();
-
-  useEffect(() => {
-    if (updatedNote && updatedNote.id === note.id) {
-      setUpdatedNote(updatedNote);
-    }
-  }, [updatedNote, note.id]);
+  const { activeSelection, handleTextareaSelection } =
+    useFieldTransferContext();
 
   return (
     <>

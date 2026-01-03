@@ -6,8 +6,7 @@ import { useFieldTransferContext } from "../contexts/useFieldTransferContext";
 
 const Field = ({ data, isStaged = false }) => {
   const { api } = useUserContext();
-  const { setNewNote, newNote, updatedNote, setUpdatedNote } =
-    useFieldTransferContext();
+  const { setNewNote, newNote, setUpdatedNote } = useFieldTransferContext();
 
   const handleSave = useCallback(
     async (newValue) => {

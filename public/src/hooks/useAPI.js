@@ -167,17 +167,20 @@ const useAPI = (cookieUser) => {
             "x-email": email,
           },
           body: JSON.stringify(newField),
-        }).then(async (response) => {
-          if (!response.ok) {
-            const errorData = await response.json();
-            throw {
-              status: response.status,
-              message: errorData.message || "Unknown server error",
-              code: errorData.code,
-            };
-          }
-          return response.json();
         })
+          .then(async (response) => {
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw {
+                ...errorData,
+                status: response.status,
+              };
+            }
+            return response.json();
+          })
+          .catch((err) => {
+            throw err;
+          })
       );
 
       if (newTextValue !== undefined) {

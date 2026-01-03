@@ -15,4 +15,4 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - name: Run eslint
-        run: yarn eslint ./src
+        run: yarn eslint ./public/src/**/*

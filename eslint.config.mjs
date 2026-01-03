@@ -39,7 +39,6 @@ export default [
       ".next/",
       "ecosystem.config.cjs",
       "next.config.js",
-      "public/",
       "coverage/",
       "src/scripts/",
     ],

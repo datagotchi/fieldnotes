@@ -4,25 +4,34 @@
 
 import request from "supertest";
 import express, { json } from "express";
-import fieldsRouter from "./fields.js";
-const app = express();
+import router from "./fields.js";
 
-app.use(json());
-app.use("/fields", fieldsRouter);
-
-const mockPool = {
-  query: jest.fn(),
-};
-
-app.use((req, res, next) => {
-  req.pool = mockPool;
-  next();
-});
+jest.mock("../middleware/auth.js", () => (req, res, next) => next());
 
 describe("fields routes", () => {
+  let app, pool;
+
+  beforeEach(() => {
+    pool = {
+      query: jest.fn(),
+    };
+    app = express();
+    app.use(express.json());
+    // Inject mock pool into req
+    app.use((req, res, next) => {
+      req.pool = pool;
+      next();
+    });
+    app.use("/", router);
+    // Error handler for testing
+    app.use((err, req, res, next) => {
+      res.status(500).json({ error: err.message });
+    });
+  });
+
   describe("GET /fields", () => {
     it("should return 401 without authentication", async () => {
-      const res = await request(app).get("/fields");
+      const res = await request(app).get("/");
       expect(res.status).toBe(401);
       expect(res.body).toEqual({
         error: "No Authentication or email header",
@@ -32,7 +41,7 @@ describe("fields routes", () => {
       console.log("Starting test for GET /fields with authentication");
       // FIXME: this post request is not working
       const res = await request(app)
-        .get("/fields")
+        .get("/")
         .set("Authorization", "Bearer test-token")
         .set("x-email", "bob@datagotchi.net");
       console.log("Response received:", res.status, res.body);

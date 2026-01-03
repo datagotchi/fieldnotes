@@ -61,7 +61,7 @@ export const FieldTransferProvider = ({ children }) => {
   const handlePillClick = useCallback(
     async (e) => {
       const fieldName = e.currentTarget.childNodes[0].nodeValue;
-      const field = fieldDefinitions.find((fd) => fd.name === fieldName);
+      const field = fieldDefinitions?.find((fd) => fd.name === fieldName);
       if (field) {
         if (activeSelection.text && activeSelection.noteId && api?.token) {
           try {
@@ -79,7 +79,7 @@ export const FieldTransferProvider = ({ children }) => {
             ) {
               apiResponseNote.field_values = apiResponseNote.field_values.map(
                 (fv) => {
-                  const fieldDef = fieldDefinitions.find(
+                  const fieldDef = fieldDefinitions?.find(
                     (fd) => fd.id === fv.field_id
                   );
                   return {
@@ -94,7 +94,7 @@ export const FieldTransferProvider = ({ children }) => {
               });
 
               setFieldDefinitions(
-                fieldDefinitions.map((fd) =>
+                fieldDefinitions?.map((fd) =>
                   fd.id === field.id
                     ? { ...fd, use_count: fd.use_count + 1 }
                     : fd

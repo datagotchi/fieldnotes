@@ -9,19 +9,9 @@ import FieldCloud from "./components/FieldCloud";
 import { useFieldTransferContext } from "./contexts/useFieldTransferContext";
 
 const App = () => {
-  const [fieldDefinitions, setFieldDefinitions] = useState();
-
   const { setActiveSelection } = useFieldTransferContext();
 
   const { isAuthenticated, api, setUser } = useUserContext();
-
-  useEffect(() => {
-    if (api.email && api.token && !fieldDefinitions) {
-      api.getFields().then((definitions) => {
-        setFieldDefinitions(definitions);
-      });
-    }
-  }, [api, api?.email, api?.token, fieldDefinitions]);
 
   return (
     <div style={styles.app}>

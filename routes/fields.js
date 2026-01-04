@@ -14,7 +14,7 @@ router.get("/", authenticateUser, async (req, res, next) => {
         count(fv.id) as use_count
       from fields f
       left join field_values fv on f.id = fv.field_id
-      where user_id = $1
+      where user_id = $1 or user_id is null
       group by f.id, f.name
       order by use_count desc, f.name asc`,
         [user_id]

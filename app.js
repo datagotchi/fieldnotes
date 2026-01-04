@@ -15,7 +15,7 @@ const client = createClient({
   url: "file:fieldnotes.db",
 });
 
-// TODO: remove this and/or change the req.pool.query() calls throughout the routes
+// TODO: remove this and change the req.pool.query() calls throughout the routes to be sqlite ?'s
 const pool = {
   query: async (textOrConfig, params) => {
     let sql = "";

@@ -69,7 +69,7 @@ const Note = ({ user, data, setData, removeNote }) => {
         </div>
       )}
 
-      <EmojiSelection
+      {/* <EmojiSelection
         noteId={data.id}
         onSelect={async (noteId, emoji) => {
           try {
@@ -82,7 +82,7 @@ const Note = ({ user, data, setData, removeNote }) => {
             console.error("Failed to save affective state:", err);
           }
         }}
-      />
+      /> */}
       {data.field_values && data.field_values.length > 0 && (
         <>
           <p style={{ margin: 0 }}>

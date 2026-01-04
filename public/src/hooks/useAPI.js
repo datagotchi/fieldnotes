@@ -185,16 +185,17 @@ const useAPI = (cookieUser) => {
 
       if (newTextValue !== undefined) {
         results.push(
-          await fetch(`/api/notes/${noteId}`, {
-            method: "PATCH",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              "x-email": email,
-            },
-            body: JSON.stringify({ text: newTextValue }),
-          }).then((response) => response.json())
+          // await fetch(`/api/notes/${noteId}`, {
+          //   method: "PATCH",
+          //   headers: {
+          //     Authorization: `Bearer ${token}`,
+          //     Accept: "application/json",
+          //     "Content-Type": "application/json",
+          //     "x-email": email,
+          //   },
+          //   body: JSON.stringify({ text: newTextValue }),
+          // }).then((response) => response.json())
+          await updateNote({ id: noteId, text: newTextValue })
         );
       }
       return {

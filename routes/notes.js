@@ -44,6 +44,8 @@ router.post("/", authenticateUser, async (req, res, next) => {
   }
 });
 
+// FIXME: fails on aws server if old_fields table is not defined
+// so: created an old_fields empty table from `\sql fields` create statement for now
 router.delete("/:note_id", authenticateUser, async (req, res, next) => {
   try {
     await req.pool.query({

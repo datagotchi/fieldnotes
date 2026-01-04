@@ -3,7 +3,7 @@ const router = Router();
 
 import authenticateuser from "../middleware/auth.js";
 
-// FIXME: net::ERR_CONNECTION_REFUSED on aws server / http 500 locally
+// FIXME: net::ERR_CONNECTION_REFUSED on aws server
 router.post("/", authenticateuser, async (req, res, next) => {
   try {
     const { note_id, field_id, value } = req.body;

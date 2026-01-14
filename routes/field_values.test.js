@@ -22,7 +22,7 @@ describe("field_values routes", () => {
       next();
     });
     app.use("/", router);
-    app.use((err, req, res, next) => {
+    app.use((err, req, res) => {
       res.status(500).json({ error: err.message });
     });
   });

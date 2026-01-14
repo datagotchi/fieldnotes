@@ -219,6 +219,54 @@ const useAPI = (cookieUser) => {
     [email, token]
   );
 
+  // FIXME: implement these skeleton functions
+  /**
+   * Normalizes vendor data into a standardized internal schema.
+   * Prevents system-wide fragmentation by ensuring all downstream components
+   * receive a consistent 'Gig' object regardless of source API changes.
+   * @returns {Array<Object>} Normalized Gig objects {id, date, location, status}
+   */
+  const getRedRoverGigs = async () => {
+    const fetchRedRoverData = async () => {
+      // use fetch() to send a GET request to the rr API
+    };
+    const rawData = await fetchRedRoverData(); // Your helper for the API call
+    return rawData.map((item) => ({
+      id: item.AssignmentId, // Red Rover's specific key
+      date: item.StartDate,
+      location: item.SchoolName,
+      status: item.Status === "Confirmed" ? "active" : "pending",
+    }));
+  };
+  /**
+   * Send username and password over HTTPS to get a session token used
+   * in other RR API calls.
+   *
+   * @returns {String} The token for other API calls.
+   */
+  const loginToRedRover = () => {};
+  /**
+   * Resilience Check: Verifies today's assignment status.
+   * Implements a "First Light" check to reduce morning uncertainty.
+   * @param token {string} the API token obtained from logging in.
+   * @returns {Promise<boolean>} True if gig is active/confirmed.
+   */
+  const verifyRedRoverGigToday = async (token) => {
+    const gigs = await getRedRoverGigs();
+    const today = new Date().toISOString().split("T")[0];
+    const todaysGig = gigs.find((g) => g.date === today);
+    return todaysGig?.status === "active";
+  };
+  /**
+   * Interoperability Layer: Syncs normalized data to GSheets.
+   * Automates the financial ledger to remove manual entry friction.
+   * @param {Object} gig - The normalized Gig object.
+   */
+  const createGoogleSheetGig = async (gig) => {
+    // logic to append to GSheet using googleapis library
+    // Ensures 'One-Touch' data integrity between scheduling and budgeting.
+  };
+
   return {
     email,
     token,

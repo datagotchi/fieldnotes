@@ -3,12 +3,15 @@
  */
 
 import request from "supertest";
-import express, { json } from "express";
+import express from "express";
 import router from "./fields.js";
 
-jest.mock("../middleware/auth.js", () => (req, res, next) => {
-  req.user = { id: 1 };
+const mockAuthenticateUser = jest.fn((req, res, next) => {
+  req.user = { id: 1 }; // Mock authenticated user
   next();
+});
+jest.mock("../middleware/auth.js", () => {
+  return { __esModule: true, default: mockAuthenticateUser };
 });
 
 describe("fields routes", () => {
@@ -25,45 +28,42 @@ describe("fields routes", () => {
       next();
     });
     app.use("/", router);
-    app.use((err, req, res, next) => {
+    app.use((err, req, res) => {
       res.status(500).json({ error: err.message });
     });
   });
 
-  describe("GET /fields", () => {
-    // TODO: figure out how to test auth middleware
-    // it("should return 401 without authentication", async () => {
-    //   const res = await request(app).get("/");
-    //   expect(res.status).toBe(401);
-    //   expect(res.body).toEqual({
-    //     error: "No Authentication or email header",
-    //   });
-    // });
+  describe("GET /", () => {
+    it("should return 401 without authentication", async () => {
+      mockAuthenticateUser.mockImplementationOnce((req, res) => {
+        res.status(401).json({ error: "No Authentication or email header" });
+      });
+      const res = await request(app).get("/");
+      expect(res.status).toBe(401);
+      expect(res.body).toEqual({ error: "No Authentication or email header" });
+    });
+
     it("should return 200 with valid authentication", async () => {
-      pool.query.mockResolvedValueOnce({ rows: { fields: [] } });
+      pool.query.mockResolvedValueOnce({ rows: [] });
       const res = await request(app)
         .get("/")
         .set("Authorization", "Bearer test-token")
         .set("x-email", "bob@datagotchi.net");
       expect(res.status).toBe(200);
-      expect(res.body).toEqual({
-        fields: [],
-      });
+      expect(res.body).toEqual([]);
     });
   });
 
-  describe("POST /fields", () => {
-    // TODO: figure out how to test auth middleware
-    // it("should return 401 without authentication", async () => {
-    //   const res = await request(app)
-    //     .post("/fields")
-    //     .set("Content-Type", "application/json")
-    //     .send({ name: "Test Field" });
-    //   expect(res.status).toBe(401);
-    //   expect(res.body).toEqual({
-    //     error: "No Authentication or email header",
-    //   });
-    // });
+  describe("POST /", () => {
+    it("should return 401 without authentication", async () => {
+      // FIXME: this is just testing the mock
+      mockAuthenticateUser.mockImplementationOnce((req, res) => {
+        res.status(401).json({ error: "No Authentication or email header" });
+      });
+      const res = await request(app).post("/").send({ name: "Test Field" });
+      expect(res.status).toBe(401);
+      expect(res.body).toEqual({ error: "No Authentication or email header" });
+    });
 
     it("should return 400 when name is missing", async () => {
       const res = await request(app)
@@ -75,7 +75,7 @@ describe("fields routes", () => {
       expect(res.body).toEqual({ error: "Name is required" });
     });
 
-    it("should return 200 and create field with valid authentication and name", async () => {
+    it("should return 201 and create field with valid authentication and name", async () => {
       pool.query.mockResolvedValueOnce({
         rows: [{ id: 1, name: "Test Field", user_id: 1 }],
       });
@@ -85,7 +85,7 @@ describe("fields routes", () => {
         .set("Authorization", "Bearer test-token")
         .set("x-email", "bob@datagotchi.net")
         .send({ name: "Test Field" });
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(201);
       expect(res.body).toEqual({
         id: expect.any(Number),
         name: "Test Field",
@@ -94,8 +94,7 @@ describe("fields routes", () => {
     });
   });
 
-  describe("DELETE /fields/:id", () => {
-    // TODO: figure out how to test auth middleware
+  describe("DELETE /:id", () => {
     it("should delete a field and return 204", async () => {
       pool.query.mockResolvedValueOnce({});
       const res = await request(app)

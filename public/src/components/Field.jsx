@@ -4,7 +4,7 @@ import EasyEdit from "react-easy-edit";
 import { useUserContext } from "../contexts/useUserContext";
 import { useFieldTransferContext } from "../contexts/useFieldTransferContext";
 
-const Field = ({ data, isStaged = false, deleteThisField }) => {
+const Field = ({ data, isStaged = false, deleteThisField = undefined }) => {
   const { api } = useUserContext();
   const { setNewNote, newNote, setUpdatedNote } = useFieldTransferContext();
 
@@ -41,7 +41,7 @@ const Field = ({ data, isStaged = false, deleteThisField }) => {
           <button
             onClick={async () => {
               if (confirm("Are you sure?")) {
-                if (isStaged) {
+                if (isStaged && deleteThisField) {
                   setNewNote({
                     ...newNote,
                     field_values: newNote.field_values.filter(

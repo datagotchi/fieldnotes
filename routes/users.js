@@ -87,6 +87,7 @@ router.post("/login", async (req, res, next) => {
     }
     return res.status(404).json({ error: "Email adadress not found." }); // TODO: combine this with other error(s) for more security
   } catch (err) {
+    console.log("*** err: ", err);
     next(err);
   }
 });

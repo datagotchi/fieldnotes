@@ -14,7 +14,7 @@ router.get("/", authenticateUser, async (req, res, next) => {
         count(fv.id) as use_count
       from fields f
       left join field_values fv on f.id = fv.field_id
-      where user_id = $1 or user_id is null
+      where f.user_id = $1 or f.user_id is null
       group by f.id, f.name
       order by use_count desc, f.name asc`,
         [user_id]
@@ -38,7 +38,7 @@ router.post("/", authenticateUser, async (req, res, next) => {
         })
         .then((result) => result.rows[0]);
 
-      return res.json(newField);
+      return res.status(201).json(newField);
     } else {
       return res.status(400).json({ error: "Name is required" });
     }

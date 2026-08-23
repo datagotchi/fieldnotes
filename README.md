@@ -1,25 +1,42 @@
-# FieldNotes by Datagotchi Labs
-**High-Fidelity Sensemaking for the 7th Era.**
+# 📝 fieldnotes
 
-FieldNotes is a local-first, high-integrity data capture tool designed for "Stewards" operating in complex, high-stakes environments (Education, Healthcare, and Community Organizing). 
+**Local-first sensory, behavioral, and observational data logger for high-stakes field environments.**
 
-## 🛡️ Sovereign Infrastructure
-FieldNotes is built on the principle of **Protective Stewardship**. Unlike traditional "extractive" cloud tools, FieldNotes prioritizes:
-- **Local-First Data:** Utilizing **LibSQL/SQLite** for offline-capability and user-owned data sovereignty.
-- **Cognitive Ergonomics:** UI components (like our custom "Pill UI") designed around **Visual Salience** to reduce cognitive load in the field.
-- **Deterministic Logic:** High-reliability state transitions to ensure data integrity during "in-situ" event logging.
+`fieldnotes` is Datagotchi Labs' sensory research primitive. Built as an offline-capable, low-entropy observational logger, it enables "Stewards" operating in complex, high-stakes environments (Education, Healthcare, and Community Organizing) to capture high-integrity data without relying on extractive cloud architectures.
 
-## 🔐 Privacy & Security Roadmap
-We are architecting for "Zero-Trust" field environments:
-- **E2EE:** End-to-end encryption for all synchronized metadata.
-- **Biometric Guarding:** Planned integration for **FaceID/TouchID** via WebAuthn.
-- **Hardware Sovereignty:** Support for **Physical Security Keys (FIDO2/Yubikey)** to ensure identity integrity.
+![FieldNotes Interface Preview](ss.png)
 
-## 🏗️ Technical Architecture & Roadmap
-- **The Migration:** Transitioning from a centralized PostgreSQL backbone to a distributed, local-first **LibSQL** framework.
-- **The Integration:** We are architecting a secure bridge to import E2EE data from **FieldNotes** into **Inspect Insights**. 
-- **The Inference Engine:** This allows for the summarization of field data while maintaining a strict chain of evidence—allowing the system to "cite" encrypted source data to support high-level insights.
-- **Architectural Evolution:** While this prototype is currently Node.js/Express + React, I am planning a merge into my larger full-stack **Next.js** platform, **[Inspect](https://github.com/datagotchi/inspect)**. This includes building an inference bridge to summarize E2EE data from FieldNotes and cite it as primary evidence—leveraging an Nginx HTTPS/TLS proxy and PostgreSQL backbone.
+---
 
-## ⚖️ License
-Copyright (C) 2026 Bob Stark / Datagotchi Labs. Distributed under the **GNU General Public License v3.0**.
+## 🛡️ Sovereign & Local-First Architecture
+
+Unlike traditional cloud-bound tools that extract user telemetry, `fieldnotes` prioritizes **Protective Stewardship**:
+
+* **Local-First Data:** Powered by **LibSQL / SQLite** for total offline independence, near-zero latency, and true user data ownership.
+* **Cognitive Ergonomics:** Custom "Pill UI" designed around visual salience—drastically reducing cognitive overhead during in-situ event logging.
+* **Deterministic Logic:** High-reliability state transitions ensuring zero data loss during active field recording.
+
+---
+
+## 🔐 Zero-Trust Privacy & Security Roadmap
+
+We are architecting `fieldnotes` for high-integrity field environments:
+
+* **End-to-End Encryption (E2EE):** E2EE synchronization for all metadata and field logs.
+* **Biometric Guarding:** WebAuthn integration (FaceID / TouchID) for secure local sessions.
+* **Hardware Sovereignty:** FIDO2 / Yubikey physical security key support to verify steward identity.
+
+---
+
+## 🌉 The `inspect` Integration & Bridge
+
+`fieldnotes` serves as an active primary data collector for the broader Datagotchi Labs platform:
+
+```mermaid
+graph LR
+    A[In-Situ Field Logs / Pill UI] --> B{Local LibSQL Engine}
+    B -->|E2EE Sync Bridge| C{Inference Engine}
+    C -->|Cite Encrypted Source Evidence| D[inspect Bayesian Platform]
+
+    style B fill:#2b2b2b,stroke:#00ffcc,color:#fff
+    style D fill:#1f1f1f,stroke:#ff0055,color:#fff
